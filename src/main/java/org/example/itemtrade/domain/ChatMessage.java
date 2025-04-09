@@ -17,7 +17,7 @@ public class ChatMessage {
   private Long id;
 
   @ManyToOne
-  private Chat chat;
+  private ChatRoom chat;
 
   @ManyToOne
   private Member sender;

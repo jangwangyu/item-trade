@@ -8,39 +8,43 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
+import lombok.Setter;
 
+@Setter
 @Entity
-public class Comment {
+public class ChatRoom {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "comment_id")
+  @Column(name = "chat_id")
   @Id
   private Long id;
 
-  private String content;
-  private LocalDateTime createdAt;
+  String title;
+
+  LocalDateTime createAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "writer_id")
-  private Member writer;
+  @JoinColumn(name = "buyer_id")
+  private Member buyer;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "seller_id")
+  private Member seller;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "item_post_id")
   private ItemPost itemPost;
 
-  @PrePersist
-  public void prePersist() {
-    this.createdAt = LocalDateTime.now();
+  public void setBuyer(Member buyer) {
+    this.buyer = buyer;
   }
 
-  public void setWriter(Member writer) {
-    this.writer = writer;
+  public void setSeller(Member seller) {
+    this.seller = seller;
   }
 
-  public void setItemPost(ItemPost post) {
-    this.itemPost = post;
+  public void setItemPost(ItemPost itemPost) {
+    this.itemPost = itemPost;
   }
-
 
 }
