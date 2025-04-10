@@ -7,7 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Entity
 public class TradeHistory { // 거래 완료 내역
 
@@ -26,4 +34,13 @@ public class TradeHistory { // 거래 완료 내역
   private ItemPost itemPost;
 
   private LocalDateTime createAt;
+
+  public static TradeHistory of(Member buyer, Member seller, ItemPost itemPost) {
+    TradeHistory trade = new TradeHistory();
+    trade.buyer = buyer;
+    trade.seller = seller;
+    trade.itemPost = itemPost;
+    trade.createAt = LocalDateTime.now();
+    return trade;
+  }
 }

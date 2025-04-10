@@ -13,8 +13,15 @@ import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 @Setter
 @Entity
 public class ItemPost { // 판매글
@@ -36,11 +43,6 @@ public class ItemPost { // 판매글
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_id")
   private Member seller;
-
-  public void setSeller(Member seller) {
-    this.seller = seller;
-  }
-
 
   @OneToMany(mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemImage> images = new ArrayList<>();

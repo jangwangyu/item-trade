@@ -9,9 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
+@Getter
 @Entity
 public class ChatRoom {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,16 +43,12 @@ public class ChatRoom {
   @JoinColumn(name = "item_post_id")
   private ItemPost itemPost;
 
-  public void setBuyer(Member buyer) {
-    this.buyer = buyer;
-  }
-
-  public void setSeller(Member seller) {
-    this.seller = seller;
-  }
-
-  public void setItemPost(ItemPost itemPost) {
-    this.itemPost = itemPost;
+  public static ChatRoom of(Member buyer, Member seller, ItemPost itemPost) {
+    ChatRoom chatRoom = new ChatRoom();
+    chatRoom.buyer = buyer;
+    chatRoom.seller = seller;
+    chatRoom.itemPost = itemPost;
+    return chatRoom;
   }
 
 }

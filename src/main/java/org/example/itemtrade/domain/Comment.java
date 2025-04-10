@@ -10,9 +10,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
-public class Comment {
+public class Comment { // 댓글
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "comment_id")
   @Id
@@ -34,12 +44,12 @@ public class Comment {
     this.createdAt = LocalDateTime.now();
   }
 
-  public void setWriter(Member writer) {
-    this.writer = writer;
-  }
-
-  public void setItemPost(ItemPost post) {
-    this.itemPost = post;
+  public static Comment of(Member writer, ItemPost itemPost, String content) {
+    Comment comment = new Comment();
+    comment.writer = writer;
+    comment.itemPost = itemPost;
+    comment.content = content;
+    return comment;
   }
 
 
