@@ -9,8 +9,8 @@ spring:
     cache: false
   datasource:
     url: jdbc:mysql://localhost:3309/item_trade
-    username: itemuser
-    password: itempass
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
