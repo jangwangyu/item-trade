@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -27,19 +28,22 @@ public class Member {
   private Long id;
 
   @Column(nullable = false)
-  String email;
+  private String email;
   @Column(nullable = false)
-  String password;
+  private String password;
   @Column(nullable = false)
-  String name;
+  private String name;
   @Column(nullable = false)
-  String nickName;
+  private String nickName;
   @Column(nullable = false)
-  String phoneNumber;
+  private String phoneNumber;
+  private String profileImageUrl;
   @Column(nullable = false)
-  String profileImageUrl;
+  private LocalDate birthDay;
 
-  String role;
+  private boolean deleted = false;
+
+  private String role;
 
   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemPost> itemPosts = new ArrayList<>();
@@ -79,5 +83,19 @@ public class Member {
     sellRooms.add(room);
     room.setSeller(this);
   }
+
+  public void delete() {
+    this.deleted = true;
+  }
+
+  public void restore() {
+    this.deleted = false;
+  }
+
+  public boolean isDeleted() {
+    return this.deleted;
+  }
+
+
 
 }
