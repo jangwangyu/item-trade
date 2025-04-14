@@ -2,9 +2,9 @@ package org.example.itemtrade.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
@@ -15,23 +15,13 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/", "/login", "/oauth2/**").permitAll()
-            .requestMatchers("/mypage/**", "/item/write", "/chat/**").authenticated()
             .anyRequest().permitAll()
         )
-        .formLogin(login -> login
-            .loginPage("/login")
-            .defaultSuccessUrl("/", true)
-            .permitAll()
-        )
+        .oauth2Login(Customizer.withDefaults())
         .logout(logout -> logout
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-            .logoutSuccessUrl("/")
+            .logoutSuccessUrl("/") // ✅ 로그아웃 후 이동할 URL
             .invalidateHttpSession(true)
-        )
-        .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
-                .defaultSuccessUrl("/", true)
-            // .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // 필요 시 추가
+            .deleteCookies("JSESSIONID")
         );
 
     return http.build();

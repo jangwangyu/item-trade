@@ -1,5 +1,6 @@
 package org.example.itemtrade.service;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
@@ -22,11 +23,13 @@ public class MemberService extends DefaultOAuth2UserService {
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
     OAuth2User oAuth2User = super.loadUser(userRequest);
 
-    String email = oAuth2User.getAttribute("email");
+    Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
+    String email = ((String) kakaoAccount.get("email")).trim().toLowerCase();
     Member member = memberRepository.findByEmail(email).orElseGet(() -> {
       Member newMember = MemberOauth2.create(userRequest, oAuth2User);
       return memberRepository.save(newMember);
     });
+    System.out.println("email=[" + email + "]");
     if (member.isDeleted()) {
       throw new DisabledException("탈퇴한 회원입니다.");
     }
@@ -49,4 +52,8 @@ public class MemberService extends DefaultOAuth2UserService {
 
     member.restore();
   }
+
+
+
+
 }

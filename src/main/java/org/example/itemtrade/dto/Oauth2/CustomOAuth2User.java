@@ -29,6 +29,6 @@ public class CustomOAuth2User implements OAuth2User { // Member 객체와 OAuth2
 
   @Override
   public String getName() {
-    return this.member.getName();
+    return this.member.getNickName();
   }
 }
