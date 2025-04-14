@@ -14,11 +14,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Entity
 public class Member {
 
@@ -27,18 +29,12 @@ public class Member {
   @Id
   private Long id;
 
-  @Column(nullable = false)
   private String email;
-  @Column(nullable = false)
   private String password;
-  @Column(nullable = false)
   private String name;
-  @Column(nullable = false)
   private String nickName;
-  @Column(nullable = false)
   private String phoneNumber;
   private String profileImageUrl;
-  @Column(nullable = false)
   private LocalDate birthDay;
 
   private boolean deleted = false;

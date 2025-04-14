@@ -27,9 +27,9 @@ public class ChatRoom {
   @Id
   private Long id;
 
-  String title;
+  private String title;
 
-  LocalDateTime createAt;
+  private LocalDateTime createAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer_id")
