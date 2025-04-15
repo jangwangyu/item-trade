@@ -13,9 +13,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 public class CustomOAuth2User implements OAuth2User { // Member 객체와 OAuth2 로그인 정보를 연결해주는 용도
 
   @Getter
-  Member member;
+  private final Member member;
 
-  Map<String, Object> attributes;
+
+  private final Map<String, Object> attributes;
 
   @Override
   public Map<String, Object> getAttributes() {

@@ -7,10 +7,8 @@ public record MemberDto(
     Long id,
     String email,
     String password,
-    String name,
     String nickName,
     String profileImageUrl,
-    String phoneNumber,
     LocalDate birthDay,
     String role) {
   public static MemberDto from(Member member) {
@@ -18,10 +16,8 @@ public record MemberDto(
           member.getId(),
           member.getEmail(),
           null,
-          member.getName(),
           member.getNickName(),
           member.getProfileImageUrl(),
-          member.getPhoneNumber(),
           member.getBirthDay(),
           member.getRole());
   }
@@ -30,10 +26,8 @@ public record MemberDto(
     return Member.builder()
         .id(memberDto.id)
         .email(memberDto.email())
-        .name(memberDto.name())
         .nickName(memberDto.nickName())
         .profileImageUrl(memberDto.profileImageUrl())
-        .phoneNumber(memberDto.phoneNumber())
         .birthDay(memberDto.birthDay())
         .role(memberDto.role())
         .build();

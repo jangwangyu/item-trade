@@ -8,7 +8,7 @@ import org.example.itemtrade.domain.TradeHistory;
 
 public class TradeCreateRequest {
 
-    public TradeHistory toEntity(Member buyer, Member seller, ItemPost itemPost) {
+    public TradeHistory of(Member buyer, Member seller, ItemPost itemPost) {
         return TradeHistory.builder()
             .buyer(buyer)
             .seller(seller)

@@ -16,7 +16,7 @@ public class ChatMessageRequest {
         this.content = content;
     }
 
-    public ChatMessage toEntity(Member sender, ChatRoom chatRoom) {
+    public ChatMessage of(Member sender, ChatRoom chatRoom) {
         return ChatMessage.builder()
             .content(this.content)
             .sender(sender)

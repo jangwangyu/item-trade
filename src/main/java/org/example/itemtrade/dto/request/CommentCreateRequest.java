@@ -16,7 +16,7 @@ public class CommentCreateRequest {
         this.content = content;
     }
 
-    public Comment toEntity(Member writer, ItemPost itemPost) {
+    public Comment of(Member writer, ItemPost itemPost) {
         return Comment.builder()
             .content(this.content)
             .writer(writer)

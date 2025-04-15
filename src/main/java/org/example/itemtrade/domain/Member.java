@@ -44,6 +44,11 @@ public class Member {
   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemPost> itemPosts = new ArrayList<>();
 
+  public Member(String email, String nickName) {
+    this.email = email;
+    this.nickName = nickName;
+  }
+
   // 연관관계 편의 메서드
   public void addItemPost(ItemPost post) {
     itemPosts.add(post);
