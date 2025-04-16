@@ -13,9 +13,7 @@ public record ItemPostResponse(
     String category,
     boolean isSold,
     LocalDateTime createdAt,
-    String sellerNickname,
-    List<String> imageUrls,
-    int commentCount
+    String sellerNickname
 ) {
   public static ItemPostResponse from(ItemPost post) {
     return new ItemPostResponse(
@@ -26,11 +24,7 @@ public record ItemPostResponse(
         post.getCategory(),
         post.isSold(),
         post.getCreatedAt(),
-        post.getSeller().getNickName(),
-        post.getImages().stream()
-            .map(ItemImage::getImageUrl)
-            .toList(),
-        post.getComments().size()
+        post.getSeller().getNickName()
     );
   }
 }

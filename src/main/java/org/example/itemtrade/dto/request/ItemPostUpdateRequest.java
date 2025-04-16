@@ -13,7 +13,14 @@ public class ItemPostUpdateRequest {
     private int price;
     private String category;
 
-  public void applyTo(ItemPost post) {
+  public ItemPostUpdateRequest(String title, String description, int price, String category) {
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+  }
+
+  public void of(ItemPost post) {
         post.setTitle(this.title);
         post.setDescription(this.description);
         post.setPrice(this.price);

@@ -98,5 +98,7 @@ public class Member {
   }
 
 
-
+  public Member getMember() {
+    return this;
+  }
 }

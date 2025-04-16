@@ -11,6 +11,13 @@ public class ItemPostCreateRequest {
   private int price;
   private String category;
 
+  public ItemPostCreateRequest(String title, String description, int price, String category) {
+    this.title = title;
+    this.description = description;
+    this.price = price;
+    this.category = category;
+  }
+
   public ItemPost of(Member seller) {
     return ItemPost.builder()
         .title(title)
