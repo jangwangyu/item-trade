@@ -29,7 +29,7 @@
      class="list-group-item list-group-item-action mb-2 p-3 border rounded bg-white">
 
     <h5 class="mb-1 fw-bold" th:text="${post.title}">게시글 제목</h5>
-    <p class="mb-1 text-muted" th:text="${post.writer}">작성자</p>
+    <p class="mb-1 text-muted" th:text="${post.sellerNickname()}">작성자</p>
 
     <!-- ✅ 가격 정보 -->
     <p class="mb-0 fw-semibold text-success">

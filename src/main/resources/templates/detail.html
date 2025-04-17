@@ -11,13 +11,13 @@
   <div class="row">
     <!-- 이미지 영역 -->
     <div class="col-md-6 mb-3">
-      <img th:src="@{${post.imageUrl}}" class="img-fluid rounded" alt="아이템 이미지">
+      <img th:src="@{${post.imagePath()}}" class="img-fluid rounded" alt="아이템 이미지" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px;">>
     </div>
 
     <!-- 상세 정보 -->
     <div class="col-md-6">
       <h3 th:text="${post.title}" class="fw-bold mb-3">아이템 제목</h3>
-      <p class="mb-2" th:text="'작성자: ' + ${post.writer}">작성자</p>
+      <p class="mb-2" th:text="'작성자: ' + ${post.sellerNickname()}">작성자</p>
       <p class="mb-2 text-primary fs-4 fw-semibold">
         <span th:if="${post.price != null}" th:text="${#numbers.formatInteger(post.price, 3, 'COMMA') + '원'}">50,000원</span>
         <span th:if="${post.price == null}">가격 미정</span>
@@ -28,7 +28,12 @@
       <div class="d-flex gap-2">
         <a th:href="@{'/chat/' + ${post.id}}" class="btn btn-outline-success">채팅하기</a>
         <a th:if="${isAuthor}" th:href="@{'/posts/edit/' + ${post.id}}" class="btn btn-outline-primary">수정</a>
-        <a th:if="${isAuthor}" th:href="@{'/posts/delete/' + ${post.id}}" class="btn btn-outline-danger">삭제</a>
+
+        <form th:action="@{${post.id} + '/delete'}" onsubmit="return confirm('정말 삭제하시겠습니까?');" method="post">
+          <input type="hidden" name="_method" value="delete"/>
+          <button type="submit" th:if="${isAuthor}" class="btn btn-danger">삭제</button>
+        </form>
+
       </div>
     </div>
   </div>
