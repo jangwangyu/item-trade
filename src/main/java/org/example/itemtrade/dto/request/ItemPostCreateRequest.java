@@ -1,15 +1,20 @@
 package org.example.itemtrade.dto.request;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class ItemPostCreateRequest {
   private String title;
   private String description;
   private int price;
   private String category;
+  private String imagePath;
 
   public ItemPostCreateRequest(String title, String description, int price, String category) {
     this.title = title;
@@ -25,8 +30,10 @@ public class ItemPostCreateRequest {
         .price(price)
         .category(category)
         .seller(seller)
+        .imagePath(imagePath)
         .isSold(false)
         .build();
   }
+
 }
 

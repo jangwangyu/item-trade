@@ -13,7 +13,9 @@ public record ItemPostResponse(
     String category,
     boolean isSold,
     LocalDateTime createdAt,
-    String sellerNickname
+    String sellerNickname,
+    Long sellerId,
+    String imagePath
 ) {
   public static ItemPostResponse from(ItemPost post) {
     return new ItemPostResponse(
@@ -24,7 +26,9 @@ public record ItemPostResponse(
         post.getCategory(),
         post.isSold(),
         post.getCreatedAt(),
-        post.getSeller().getNickName()
+        post.getSeller().getNickName(),
+        post.getSeller().getId(),
+        post.getImagePath()
     );
   }
 }

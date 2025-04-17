@@ -2,11 +2,13 @@ package org.example.itemtrade.dto.request;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.itemtrade.domain.ItemPost;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class ItemPostUpdateRequest {
     private String title;
     private String description;
@@ -19,6 +21,7 @@ public class ItemPostUpdateRequest {
         this.price = price;
         this.category = category;
   }
+
 
   public void of(ItemPost post) {
         post.setTitle(this.title);

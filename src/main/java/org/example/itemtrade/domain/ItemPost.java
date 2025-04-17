@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 
 @Builder
 @NoArgsConstructor
@@ -37,6 +38,8 @@ public class ItemPost { // 판매글
 
   private String category; // ex. 게임 이름
   private boolean isSold;
+  private String imageUrl; // 이미지 URL
+  private String imagePath;
 
 
   private LocalDateTime createdAt;
@@ -73,6 +76,13 @@ public class ItemPost { // 판매글
   @PrePersist
   public void prePersist() {
     this.createdAt = LocalDateTime.now();
+  }
+
+  public void update(ItemPostUpdateRequest request) {
+    this.title = request.getTitle();
+    this.description = request.getDescription();
+    this.price = request.getPrice();
+    this.category = request.getCategory();
   }
 
 }
