@@ -34,9 +34,14 @@ public class PostService {
   private final ItemPostRepository postRepository;
 
   // 전체조회
-  public List<ItemPostResponse> getAllPosts() {
+  public List<ItemPostResponse> getAllPosts(String category, Integer minPrice, Integer maxPrice) {
     // 모든 게시글을 조회하여 반환
-    return postRepository.findAll().stream().map(ItemPostResponse::from).toList();
+    return postRepository.findAll().stream()
+        .filter(post -> post.getCategory() != null) // 카테고리가 null이 아닌 게시글만 필터링
+        .filter(post -> category == null || post.getCategory().name().equals(category))
+        .filter(post -> minPrice == null || post.getPrice() >= minPrice)
+        .filter(post -> maxPrice == null || post.getPrice() <= maxPrice)
+        .map(ItemPostResponse::from).toList();
   }
 
   // 특정 게시글 조회

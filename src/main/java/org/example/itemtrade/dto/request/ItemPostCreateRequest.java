@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
+import org.example.itemtrade.enums.Category;
 
 @Getter
 @Setter
@@ -13,10 +14,10 @@ public class ItemPostCreateRequest {
   private String title;
   private String description;
   private int price;
-  private String category;
+  private Category category;
   private String imagePath;
 
-  public ItemPostCreateRequest(String title, String description, int price, String category) {
+  public ItemPostCreateRequest(String title, String description, int price, Category category) {
     this.title = title;
     this.description = description;
     this.price = price;

@@ -10,7 +10,7 @@
 <section style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 0.5rem;">
   <h2 class="mb-4">최근 게시글</h2>
 
-  <!-- ✅ 가격 검색 필터 -->
+  <!-- 가격 검색 필터 -->
   <form class="row mb-3" th:action="@{/}" method="get">
     <div class="col-md-3">
       <input type="number" class="form-control" name="minPrice" placeholder="최소 가격 (원)" th:value="${param.minPrice}">
@@ -21,9 +21,19 @@
     <div class="col-md-3">
       <button type="submit" class="btn btn-outline-primary w-100">검색</button>
     </div>
+    <!-- 카테고리 필터 버튼 -->
+    <div class="btn-group mb-3" role="group">
+      <a th:href="@{/}" class="btn btn-outline-secondary">전체</a>
+      <a th:each="cat : ${categories}"
+         th:href="@{/?category={cat}(cat=${cat.name()})}"
+         th:text="${cat.displayName}"
+         class="btn btn-outline-secondary">
+      </a>
+    </div>
   </form>
 
-  <!-- ✅ 게시글 리스트 -->
+
+  <!-- 게시글 리스트 -->
   <a th:each="post : ${posts}"
      th:href="@{'/posts/' + ${post.id}}"
      class="list-group-item list-group-item-action mb-2 p-3 border rounded bg-white">
@@ -31,7 +41,12 @@
     <h5 class="mb-1 fw-bold" th:text="${post.title}">게시글 제목</h5>
     <p class="mb-1 text-muted" th:text="${post.sellerNickname()}">작성자</p>
 
-    <!-- ✅ 가격 정보 -->
+    <!-- 카테고리 정보 -->
+    <p class="mb-1">
+      <span class="badge bg-secondary" th:text="${post.categoryDisplayName}">카테고리</span>
+    </p>
+
+    <!-- 가격 정보 -->
     <p class="mb-0 fw-semibold text-success">
       <span th:if="${post.price != null}" th:text="${#numbers.formatInteger(post.price, 3, 'COMMA') + '원'}">100,000원</span>
       <span th:if="${post.price == null}">가격 미정</span>

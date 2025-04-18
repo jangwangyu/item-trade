@@ -12,11 +12,20 @@
     <div class="mb-3">
       <label for="title" class="form-label">제목</label>
       <input type="text" class="form-control" id="title" th:field="*{title}" required>
+      <label for="category" class="form-label mt-3">카테고리
+        <select id="category" class="form-select" th:field="*{category}">
+          <option th:each="cat : ${categories}"
+                  th:value="${cat.name()}"
+                  th:text="${cat.displayName}">
+          </option>
+        </select>
+      </label>
     </div>
     <div class="mb-3">
       <label for="price" class="form-label">가격</label>
       <input type="number" class="form-control" id="price" th:field="*{price}" required>
     </div>
+
     <div class="mb-3">
       <label for="description" class="form-label">설명</label>
       <textarea class="form-control" id="description" th:field="*{description}" rows="4" required></textarea>

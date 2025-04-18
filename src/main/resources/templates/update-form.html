@@ -20,6 +20,15 @@
     <div class="mb-3">
       <label for="title" class="form-label">제목</label>
       <input type="text" class="form-control" id="title" th:field="*{title}" required>
+      <label for="category" class="form-label mt-3">카테고리
+        <select id="category" class="form-select" th:field="*{category}">
+          <option th:each="cat : ${categories}"
+                  th:value="${cat.name()}"
+                  th:text="${cat.displayName}"
+                  th:selected="${cat.name() == post.category.name()}">
+          </option>
+        </select>
+      </label>
     </div>
 
     <div class="mb-3">

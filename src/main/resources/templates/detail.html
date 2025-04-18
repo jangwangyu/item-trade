@@ -17,6 +17,9 @@
     <!-- 상세 정보 -->
     <div class="col-md-6">
       <h3 th:text="${post.title}" class="fw-bold mb-3">아이템 제목</h3>
+      <p>
+        <span class="badge bg-secondary mb-2" th:text="${post.getCategoryDisplayName}">카테고리</span>
+      </p>
       <p class="mb-2" th:text="'작성자: ' + ${post.sellerNickname()}">작성자</p>
       <p class="mb-2 text-primary fs-4 fw-semibold">
         <span th:if="${post.price != null}" th:text="${#numbers.formatInteger(post.price, 3, 'COMMA') + '원'}">50,000원</span>

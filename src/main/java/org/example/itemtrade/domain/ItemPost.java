@@ -3,6 +3,8 @@ package org.example.itemtrade.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
+import org.example.itemtrade.enums.Category;
 
 @Builder
 @NoArgsConstructor
@@ -36,10 +39,12 @@ public class ItemPost { // 판매글
   private String description;
   private int price;
 
-  private String category; // ex. 게임 이름
+  @Enumerated(EnumType.STRING)
+  private Category category; // ex. 카테고리
   private boolean isSold;
   private String imageUrl; // 이미지 URL
   private String imagePath;
+
 
 
   private LocalDateTime createdAt;
