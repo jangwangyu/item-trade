@@ -1,18 +1,21 @@
 package org.example.itemtrade.dto.request;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.itemtrade.domain.Comment;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommentCreateRequest {
+
     private String content;
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
+    public CommentCreateRequest(String content){
         this.content = content;
     }
 
