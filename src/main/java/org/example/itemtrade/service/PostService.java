@@ -18,6 +18,7 @@ import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +51,7 @@ public class PostService {
   }
 
   // 게시글 작성
-  public ItemPostResponse createPost(ItemPostCreateRequest request, CustomOAuth2User user, MultipartFile image)
+  public ItemPostResponse createPost(ItemPostCreateRequest request, @AuthenticationPrincipal CustomOAuth2User user, MultipartFile image)
       throws IOException {
     String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/";
     // 1. 디렉토리 확인 및 생성
@@ -77,7 +78,7 @@ public class PostService {
   }
 
   // 수정
-  public void updatePost(Long postId, ItemPostUpdateRequest request, Member currentUser, MultipartFile image) throws IOException {
+  public void updatePost(Long postId, ItemPostUpdateRequest request,@AuthenticationPrincipal Member currentUser, MultipartFile image) throws IOException {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -106,7 +107,7 @@ public class PostService {
   }
 
   // 특정 게시글 삭제
-  public void deletePost(Long postId, Member user) {
+  public void deletePost(Long postId,@AuthenticationPrincipal Member user) {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
