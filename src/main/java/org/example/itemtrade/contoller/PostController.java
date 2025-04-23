@@ -1,12 +1,15 @@
 package org.example.itemtrade.contoller;
 
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.dto.CommentDto;
 import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.dto.request.ItemPostCreateRequest;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.enums.Category;
+import org.example.itemtrade.service.CommentService;
 import org.example.itemtrade.service.PostService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,9 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/posts")
 @Controller
-public class PostContoller {
+public class PostController {
 
   private final PostService postService;
+
+  private final CommentService commentService;
 
   // 게시글 조회
   @GetMapping("/{id}")
@@ -36,9 +41,17 @@ public class PostContoller {
 
     boolean isAuthor = user != null && post.sellerId().equals(user.getMember().getId());
 
+    // 댓글 리스트
+    List<CommentDto> comments = commentService.commentList(id);
+
     model.addAttribute("post", post);
     model.addAttribute("isAuthor", isAuthor);
-
+    model.addAttribute("comments", comments);
+    if (user != null && user.getMember().getId() != null) {
+      model.addAttribute("currentUserId", user.getMember().getId());
+    } else {
+      model.addAttribute("currentUserId", null);
+    }
     return "/detail";
   }
 
