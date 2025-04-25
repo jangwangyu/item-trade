@@ -31,6 +31,7 @@ public class ChatRoom {
 
   private LocalDateTime createAt;
 
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer_id")
   private Member buyer;
