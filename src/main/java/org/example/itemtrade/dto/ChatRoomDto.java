@@ -11,15 +11,22 @@ public record ChatRoomDto(
     String buyerNickname,
     String sellerNickname,
     Long unreadCount
-) {
+)
+
+{
+
     public static ChatRoomDto from(ChatRoom chatRoom, Long unreadCount) {
+        // 구매자와 판매자가 null일 수 있으므로 null 체크 후 기본값 설정
+        String buyerNickname = (chatRoom.getBuyer() != null) ? chatRoom.getBuyer().getNickName() : "Unknown";
+        String sellerNickname = (chatRoom.getSeller() != null) ? chatRoom.getSeller().getNickName() : "Unknown";
+
         return new ChatRoomDto(
             chatRoom.getId(),
             chatRoom.getItemPost().getId(),
             chatRoom.getItemPost().getTitle(),
             chatRoom.getItemPost().getPrice(),
-            chatRoom.getBuyer().getNickName(),
-            chatRoom.getSeller().getNickName(),
+            buyerNickname,
+            sellerNickname,
             unreadCount
         );
     }
