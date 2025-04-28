@@ -11,10 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
 @Entity
 public class ChatMessage {
@@ -25,7 +27,7 @@ public class ChatMessage {
   private Long id;
 
   @ManyToOne
-  private ChatRoom chat;
+  private ChatRoom chatRoom;
 
   @ManyToOne
   private Member sender;
@@ -35,10 +37,18 @@ public class ChatMessage {
   private boolean isRead;
   private LocalDateTime createdAt;
 
+  public ChatMessage(Member sender, ChatRoom chatRoom, String content) {
+    this.sender = sender;
+    this.chatRoom = chatRoom;
+    this.content = content;
+    this.isRead = false;
+    this.createdAt = LocalDateTime.now();
+  }
+
   public static ChatMessage of(Member sender, ChatRoom chatRoom, String content) {
     ChatMessage message = new ChatMessage();
     message.sender = sender;
-    message.chat = chatRoom;
+    message.chatRoom = chatRoom;
     message.content = content;
     message.isRead = false;
     message.createdAt = LocalDateTime.now();
