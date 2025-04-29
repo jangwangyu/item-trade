@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class ChatRoomController {
 
   // 채팅방 목록
   @GetMapping("/chat-list")
-  public String getChatRooms(Model model, @AuthenticationPrincipal Member user) {
+  public String getChatRooms(Model model, @AuthenticationPrincipal CustomOAuth2User user) {
     // 채팅방 목록 조회
     List<ChatRoomDto> chatRooms = chatroomService.getChatRoomsForMember(user);
 
@@ -35,11 +34,11 @@ public class ChatRoomController {
 
   // 채팅방 생성
   @PostMapping("/chat/{postId}")
-  public String createChatRoom(@AuthenticationPrincipal CustomOAuth2User user, @RequestParam Long itemPostId) {
+  public String createChatRoom(@AuthenticationPrincipal CustomOAuth2User user, @PathVariable Long postId) {
 
     // 채팅방 생성
-    ChatRoom room = chatroomService.createChatRoom(user, itemPostId);
-
+    ChatRoom room = chatroomService.createChatRoom(user, postId);
+    System.out.println("🌐 요청 도착: itemPostId=" + postId);
     return "redirect:/chat/" + room.getId();
   }
 
@@ -49,6 +48,8 @@ public class ChatRoomController {
     // 상세조회
     ChatRoomDto room = chatroomService.getChatRoomById(chatRoomId, user.getMember());
     model.addAttribute("room", room);
+    model.addAttribute("chatRoomId", chatRoomId);
+    model.addAttribute("currentUserId", user.getMember().getId());
 
     return "/chat";
   }
