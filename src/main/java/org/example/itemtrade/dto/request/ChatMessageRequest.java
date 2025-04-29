@@ -9,6 +9,10 @@ import lombok.Setter;
 public class ChatMessageRequest {
 
     private String content;
+    private Long senderId;
 
 
+  public ChatMessageRequest(String content) {
+    this.content = content;
+  }
 }
