@@ -31,56 +31,60 @@
   </style>
 </head>
 <body th:replace="~{layout :: layout(~{::section})}">
-
 <section style="background-color: #f8f9fa; padding: 2rem; border-radius: 0.5rem;">
-
   <!-- 채팅 헤더 -->
   <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
-    <h4 class="mb-0" th:text="${post.title}">아이템 제목</h4>
-    <span class="text-primary fw-semibold fs-5" th:text="${#numbers.formatInteger(post.price, 3, 'COMMA') + '원'}">50,000원</span>
+    <h4 class="mb-0" th:text="${room.itemTitle()}">아이템 제목</h4>
+    <span class="text-primary fw-semibold fs-5" th:text="${#numbers.formatInteger(room.itemPrice(), 3, 'COMMA') + '원'}">50,000원</span>
   </div>
 
   <!-- 채팅 내용 (스크롤 영역) -->
-  <div class="chat-box d-flex flex-column gap-3 mb-3">
+  <div class="chat-box d-flex flex-column gap-3 mb-3" id="chatBox">
+    <div th:each="message : ${messages}"
+         th:class="'d-flex ' + (${message.senderId} == ${currentUserId} ? 'justify-content-end align-items-start' : 'align-items-start') + ' gap-2'">
 
-    <!-- 상대방 메시지 -->
-    <div class="d-flex align-items-start gap-2">
-      <img src="/images/user1.png" class="profile-img" alt="상대방">
-      <div>
-        <div class="chat-bubble chat-left shadow-sm">
-          <strong class="d-block mb-1">상대방</strong>
-          안녕하세요, 이거 아직 판매 중인가요?
+      <!-- 상대방 메시지 -->
+      <div th:if="${message.senderId != currentUserId}" class="d-flex align-items-start gap-2">
+        <img src="/images/user1.png" class="profile-img" alt="상대방">
+        <div>
+          <div class="chat-bubble chat-left shadow-sm">
+            <strong class="d-block mb-1" th:text="${message.senderNickname}">상대방</strong>
+            <span th:text="${message.content}">메시지 내용</span>
+          </div>
+          <div class="text-muted small mt-1 ms-1" th:text="${#temporals.format(message.createdAt, 'a hh:mm')}">오전 10:15</div>
         </div>
-        <small class="text-muted ms-1">오전 10:15</small>
       </div>
-    </div>
 
-    <!-- 내 메시지 -->
-    <div class="d-flex justify-content-end align-items-start gap-2">
-      <div>
-        <div class="chat-bubble chat-right shadow-sm text-end">
-          <strong class="d-block mb-1">나</strong>
-          네! 아직 가능합니다.
+      <!-- 내 메시지 -->
+      <div th:if="${message.senderId == currentUserId}" class="d-flex justify-content-end align-items-start gap-2">
+        <div>
+          <div class="chat-bubble chat-right shadow-sm text-end">
+            <strong class="d-block mb-1">나</strong>
+            <span th:text="${message.content}">메시지 내용</span>
+          </div>
+
+          <div class="text-muted small mt-1 text-end">
+            <span th:text="${#temporals.format(message.createdAt, 'a hh:mm')}">오전 10:17</span>
+            <span class="ms-2" th:if="${message.isRead}" style="color:green;">읽음</span>
+            <span class="ms-2" th:if="${!message.isRead}" style="color:gray;">안읽음</span>
+          </div>
         </div>
-        <div class="text-muted small mt-1 text-end">오전 10:17</div>
+        <img src="/images/user2.png" class="profile-img" alt="나">
       </div>
-      <img src="/images/user2.png" class="profile-img" alt="나">
-    </div>
 
-    <!-- 읽지 않은 메시지 표시 -->
-    <div class="text-center mt-2">
-      <span class="badge bg-danger">1</span>
     </div>
-
   </div>
 
   <!-- 메시지 입력창 -->
-  <form class="d-flex gap-2 border-top pt-3">
-    <input type="text" class="form-control" placeholder="메시지를 입력하세요">
+  <form id="chatForm" class="d-flex gap-2 border-top pt-3">
+    <input id="chatInput" type="text" class="form-control" placeholder="메시지를 입력하세요">
     <button type="submit" class="btn btn-primary">전송</button>
   </form>
 
+  <script th:inline="javascript">
+    window.roomId = /*[[${chatRoomId}]]*/ 0;
+    window.senderId = /*[[${currentUserId}]]*/ 0;
+  </script>
 </section>
-
 </body>
 </html>

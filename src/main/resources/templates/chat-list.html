@@ -35,13 +35,13 @@
   <h3 class="mb-4">1:1 채팅 목록</h3>
 
   <div class="list-group">
-    <a th:each="chat : ${chatList}"
-       th:href="@{/chat/{roomId}(roomId=${chat.roomId})}"
+    <a th:each="chat : ${chatRooms}"
+       th:href="@{/chat/{chatRoomId}(chatRoomId=${chat.id})}"
        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center chat-item py-3">
 
       <!-- 왼쪽: 프로필 + 내용 -->
       <div class="d-flex align-items-center gap-3">
-        <img th:src="@{${chat.partnerImageUrl}}" class="profile-img" alt="프로필">
+        <img th:src="@{${chat.itemTitle}}" class="profile-img" alt="프로필">
         <div>
           <div class="fw-semibold" th:text="${chat.itemTitle}">닌텐도 스위치 팝니다</div>
           <div class="text-muted ellipsis" th:text="${chat.lastMessage}">마지막 메시지가 표시됩니다</div>
@@ -50,8 +50,8 @@
 
       <!-- 오른쪽: 가격 + 뱃지 -->
       <div class="text-end">
-        <div class="fw-bold text-primary" th:text="${#numbers.formatInteger(chat.price, 3, 'COMMA') + '원'}">280,000원</div>
-        <span class="badge bg-danger mt-1" th:if="${chat.unreadCount > 0}"
+        <div class="fw-bold text-primary" th:text="${#numbers.formatInteger(chat.itemPrice(), 3, 'COMMA') + '원'}">280,000원</div>
+        <span class="badge bg-danger mt-1" th:if="${chat.unreadCount >= 0}"
               th:text="${chat.unreadCount}">1</span>
       </div>
 
