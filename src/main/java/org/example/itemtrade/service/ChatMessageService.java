@@ -6,7 +6,6 @@ import org.example.itemtrade.domain.ChatMessage;
 import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatMessageDto;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.dto.request.ChatMessageRequest;
 import org.example.itemtrade.repository.ChatMessageRepository;
 import org.example.itemtrade.repository.ChatRoomRepository;
@@ -68,11 +67,11 @@ public class ChatMessageService {
 
 
   // 읽지 않은 메세지 조회
-  public Long UnreadMessageCount(Long roomId, CustomOAuth2User currentUser) {
+  public Long UnreadMessageCount(Long roomId, Member member) {
     ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
         new IllegalArgumentException("채팅방이 존재하지 않습니다."));
 
-    return chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, currentUser.getMember());
+    return chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member);
   }
 
 
