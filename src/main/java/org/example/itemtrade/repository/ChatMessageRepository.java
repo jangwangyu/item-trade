@@ -1,6 +1,7 @@
 package org.example.itemtrade.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.example.itemtrade.domain.ChatMessage;
 import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.Member;
@@ -11,4 +12,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
   List<ChatMessage> findAllByChatRoomOrderByCreatedAtAsc(ChatRoom chatRoom);
   // 현재 사용자가 받은 안 읽은 메시지 개수 조회
   long countByChatRoomAndSenderNotAndIsReadFalse(ChatRoom room, Member currentUser);
+  // 현재 사용자가 보낸 메시지 중 마지막 메시지 조회
+  Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);  // 특정 채팅방의 마지막 메시지 조회
 }
