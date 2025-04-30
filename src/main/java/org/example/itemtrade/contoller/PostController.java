@@ -3,8 +3,8 @@ package org.example.itemtrade.contoller;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.CommentDto;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.dto.request.ItemPostCreateRequest;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
@@ -35,11 +35,11 @@ public class PostController {
 
   // 게시글 조회
   @GetMapping("/{id}")
-  public String showDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomOAuth2User user) {
+  public String showDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal(expression = "member") Member member) {
 
     var post = postService.getPostById(id);
 
-    boolean isAuthor = user != null && post.sellerId().equals(user.getMember().getId());
+    boolean isAuthor = member != null && post.sellerId().equals(member.getId());
 
     // 댓글 리스트
     List<CommentDto> comments = commentService.commentList(id);
@@ -47,8 +47,8 @@ public class PostController {
     model.addAttribute("post", post);
     model.addAttribute("isAuthor", isAuthor);
     model.addAttribute("comments", comments);
-    if (user != null && user.getMember().getId() != null) {
-      model.addAttribute("currentUserId", user.getMember().getId());
+    if (member != null && member.getId() != null) {
+      model.addAttribute("currentUserId", member.getId());
     } else {
       model.addAttribute("currentUserId", null);
     }
@@ -64,10 +64,10 @@ public class PostController {
   }
 
   @PostMapping
-  public String createPost(@ModelAttribute ItemPostCreateRequest request, @AuthenticationPrincipal CustomOAuth2User user, @RequestParam("imageUrl") MultipartFile image)
+  public String createPost(@ModelAttribute ItemPostCreateRequest request, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam("imageUrl") MultipartFile image)
       throws IOException {
 
-    postService.createPost(request, user, image);
+    postService.createPost(request, member, image);
 
     return "redirect:/";
   }
@@ -85,19 +85,19 @@ public class PostController {
   @PutMapping("/edit/{id}")
   public String updatePost(@PathVariable Long id,
       @ModelAttribute ItemPostUpdateRequest request,
-      @AuthenticationPrincipal CustomOAuth2User user,
+      @AuthenticationPrincipal(expression = "member") Member member,
       @RequestParam(value = "imageUrl", required = false) MultipartFile image) throws IOException {
 
-    postService.updatePost(id, request, user.getMember(), image);
+    postService.updatePost(id, request, member, image);
 
     return "redirect:/posts/" + id;
   }
 
   // 게시글 삭제
   @DeleteMapping("/{id}/delete")
-  public String deletePost(@PathVariable Long id, @AuthenticationPrincipal CustomOAuth2User user) {
+  public String deletePost(@PathVariable Long id, @AuthenticationPrincipal(expression = "member") Member member) {
 
-    postService.deletePost(id, user.getMember());
+    postService.deletePost(id, member.getMember());
 
     return "redirect:/";
   }

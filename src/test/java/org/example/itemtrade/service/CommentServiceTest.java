@@ -83,8 +83,6 @@ class CommentServiceTest {
   void 댓글달기() {
     // Given
     Member member = new Member("test@test", "완구");
-    CustomOAuth2User user = Mockito.mock(CustomOAuth2User.class); // OAuth2 사용자를 모킹해서 user객체로 넣음
-    Mockito.when(user.getMember()).thenReturn(member); // user 객체에서 member를 가져오는 메서드 모킹 (getMember() 메서드가 호출되면 member를 반환하도록 설정)
     member.setId(1L);
 
     ItemPost post = ItemPost.builder()
@@ -112,7 +110,7 @@ class CommentServiceTest {
     when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
     // When
-    CommentDto result = commentService.addComment(request, post.getId(), user);
+    CommentDto result = commentService.addComment(request, post.getId(), member);
 
 
     // Then
@@ -125,9 +123,6 @@ class CommentServiceTest {
     // Given
     Member member = new Member("test@test", "완구");
     member.setId(1L);
-
-    CustomOAuth2User user = Mockito.mock(CustomOAuth2User.class); // OAuth2 사용자를 모킹해서 user객체로 넣음
-    Mockito.when(user.getMember()).thenReturn(member); // user 객체에서 member를 가져오는 메서드 모킹 (getMember() 메서드가 호출되면 member를 반환하도록 설정)
 
     ItemPost post = ItemPost.builder()
         .title("title")
@@ -148,7 +143,7 @@ class CommentServiceTest {
     when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
 
     // when
-    commentService.deleteComment(comment.getId(), user);
+    commentService.deleteComment(comment.getId(), member);
 
     // Then
     verify(commentRepository).delete(comment);

@@ -12,7 +12,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.dto.request.ItemPostCreateRequest;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
@@ -50,7 +49,7 @@ public class PostService {
   }
 
   // 게시글 작성
-  public ItemPostResponse createPost(ItemPostCreateRequest request, CustomOAuth2User user, MultipartFile image)
+  public ItemPostResponse createPost(ItemPostCreateRequest request, Member member, MultipartFile image)
       throws IOException {
     String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/";
     // 1. 디렉토리 확인 및 생성
@@ -70,18 +69,18 @@ public class PostService {
 
     // 4. DTO -> Entity
     request.setImagePath("/uploads/" + storedFilename); // DB 저장용 URL
-    ItemPost post = request.of(user.getMember());
+    ItemPost post = request.of(member);
     postRepository.save(post);
     // 5. Entity -> DTO
     return ItemPostResponse.from(post);
   }
 
   // 수정
-  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member currentUser, MultipartFile image) throws IOException {
+  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, MultipartFile image) throws IOException {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-    if (!post.getSeller().getId().equals(currentUser.getId())) {
+    if (!post.getSeller().getId().equals(member.getId())) {
       throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
     }
 
@@ -106,11 +105,11 @@ public class PostService {
   }
 
   // 특정 게시글 삭제
-  public void deletePost(Long postId ,Member user) {
+  public void deletePost(Long postId ,Member member) {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
-    if(!post.getSeller().getId().equals(user.getMember().getId())) {
+    if(!post.getSeller().getId().equals(member.getId())) {
       throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");
     }
 

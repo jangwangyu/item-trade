@@ -8,7 +8,6 @@ import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatRoomDto;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.repository.ChatMessageRepository;
 import org.example.itemtrade.repository.ChatRoomRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
@@ -25,29 +24,29 @@ public class ChatroomService {
   private final ChatMessageRepository chatMessageRepository;
 
   // 채팅방 생성
-  public ChatRoom createChatRoom(CustomOAuth2User buyer, Long postId) {
+  public ChatRoom createChatRoom(Member buyer, Long postId) {
 
     ItemPost post = itemPostRepository.findById(postId).orElseThrow(() ->
         new IllegalArgumentException("게시글을 찾을 수 없습니다.")); // 게시글이 존재하는지 확인
 
     Member seller = post.getSeller(); // 판매자 정보 가져오기
 
-    return chatroomRepository.findByItemPostAndBuyerAndSeller(post, buyer.getMember(), seller)
+    return chatroomRepository.findByItemPostAndBuyerAndSeller(post, buyer, seller)
         .orElseGet(() -> {
-          System.out.println("✅ ChatRoom 생성 요청: buyer=" + buyer.getMember().getId() + ", seller=" + seller.getId() + ", post=" + post.getId());
-          ChatRoom chatRoom = ChatRoom.of(buyer.getMember(), seller, post);
+          System.out.println("✅ ChatRoom 생성 요청: buyer=" + buyer.getId() + ", seller=" + seller.getId() + ", post=" + post.getId());
+          ChatRoom chatRoom = ChatRoom.of(buyer, seller, post);
           System.out.println("💾 ChatRoom 저장 시도: " + chatRoom);
           return chatroomRepository.save(chatRoom);
         });
   }
 
   // 채팅방 목록
-  public List<ChatRoomDto> getChatRoomsForMember(CustomOAuth2User member) {
+  public List<ChatRoomDto> getChatRoomsForMember(Member member) {
     if (member == null) {
       throw new IllegalStateException("로그인한 사용자만 채팅 목록을 조회할 수 있습니다.");
     }
-    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyer(member.getMember());
-    List<ChatRoom> asSeller = chatroomRepository.findAllBySeller(member.getMember());
+    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyer(member);
+    List<ChatRoom> asSeller = chatroomRepository.findAllBySeller(member);
 
     // 구매자 채팅방과 판매자 채팅방을 합쳐서 하나의 리스트로 반환
     return Stream.concat(asBuyer.stream(), asSeller.stream())
@@ -55,8 +54,9 @@ public class ChatroomService {
         .map(room -> {
           ChatMessage lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(room.getId()).orElse(null);
           String lastContent = (lastMessage != null) ? lastMessage.getContent() : "";
-          Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, member.getMember());
+          Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, member);
           System.out.println("📌 room.id = " + room.getId());
+          System.out.println("📬 room " + room.getId() + " unreadCount: " + unreadCount);
           return ChatRoomDto.from(room, unreadCount, lastContent);
         })
         .toList();

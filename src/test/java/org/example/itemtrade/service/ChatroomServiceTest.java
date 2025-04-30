@@ -17,7 +17,6 @@ import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatRoomDto;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.repository.ChatMessageRepository;
 import org.example.itemtrade.repository.ChatRoomRepository;
@@ -52,15 +51,13 @@ class ChatroomServiceTest {
     // given
     Long postId = 1L;
     ItemPost post = mock(ItemPost.class);
-    Member buyerMember = new Member("test@test.com", "완구");
-    CustomOAuth2User buyer = mock(CustomOAuth2User.class);
+    Member buyer = new Member("test@test.com", "완구");
     ChatRoom chatRoom = mock(ChatRoom.class);
     Member seller = mock(Member.class);
 
-    when(buyer.getMember()).thenReturn(buyerMember);
     when(post.getSeller()).thenReturn(seller); // 판매자 정보 가져오기
     when(itemPostRepository.findById(postId)).thenReturn(Optional.of(post)); // 게시글을 찾으면 post 반환
-    when(chatRoomRepository.findByItemPostAndBuyerAndSeller(post,buyerMember,seller))
+    when(chatRoomRepository.findByItemPostAndBuyerAndSeller(post,buyer,seller))
         .thenReturn(Optional.empty()); // 기존 채팅방이 없다고 가정함
     when(chatRoomRepository.save(any(ChatRoom.class))).thenReturn(chatRoom); // 새로 만든 채팅방을 반환
 
@@ -74,7 +71,7 @@ class ChatroomServiceTest {
     ChatRoom savedChatRoom = captor.getValue();
     assertEquals(chatRoom, result); // 반환된 채팅방이 새로 만든 chatRoom과 같은지 확인
     assertEquals(post, savedChatRoom.getItemPost());
-    assertEquals(buyerMember, savedChatRoom.getBuyer());
+    assertEquals(buyer, savedChatRoom.getBuyer());
     assertEquals(seller, savedChatRoom.getSeller());
   }
 
@@ -83,15 +80,13 @@ class ChatroomServiceTest {
     // given
     Long postId = 1L;
     ItemPost post = mock(ItemPost.class);
-    Member buyerMember = new Member("test@test.com", "완구");
-    CustomOAuth2User buyer = mock(CustomOAuth2User.class);
+    Member buyer = new Member("test@test.com", "완구");
     ChatRoom existingRoom = mock(ChatRoom.class);
     Member seller = mock(Member.class);
 
-    when(buyer.getMember()).thenReturn(buyerMember);
     when(post.getSeller()).thenReturn(seller); // 판매자 정보 가져오기
     when(itemPostRepository.findById(postId)).thenReturn(Optional.of(post)); // 게시글을 찾으면 post 반환
-    when(chatRoomRepository.findByItemPostAndBuyerAndSeller(post,buyerMember,seller))
+    when(chatRoomRepository.findByItemPostAndBuyerAndSeller(post,buyer,seller))
         .thenReturn(Optional.of(existingRoom)); // 기존 채팅방이 있다고 가정함
 
     // when
