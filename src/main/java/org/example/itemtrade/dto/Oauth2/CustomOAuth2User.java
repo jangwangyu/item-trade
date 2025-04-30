@@ -15,7 +15,6 @@ public class CustomOAuth2User implements OAuth2User { // Member 객체와 OAuth2
   @Getter
   private final Member member;
 
-
   private final Map<String, Object> attributes;
 
   @Override
