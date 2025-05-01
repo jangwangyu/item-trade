@@ -51,7 +51,7 @@
             <strong class="d-block mb-1" th:text="${message.senderNickname}">상대방</strong>
             <span th:text="${message.content}">메시지 내용</span>
           </div>
-          <div class="text-muted small mt-1 ms-1" th:text="${#temporals.format(message.createdAt, 'a hh:mm')}">오전 10:15</div>
+          <div class="text-muted small mt-1 ms-1" th:text="${#temporals.format(message.createdAt, 'a h:mm')}">오전 10:15</div>
         </div>
       </div>
 

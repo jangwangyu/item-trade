@@ -4,7 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.Member;
+import org.example.itemtrade.dto.ChatMessageDto;
 import org.example.itemtrade.dto.ChatRoomDto;
+import org.example.itemtrade.service.ChatMessageService;
 import org.example.itemtrade.service.ChatroomService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ChatRoomController {
 
   private final ChatroomService chatroomService;
+  private final ChatMessageService chatMessageService;
 
   // 채팅방 목록
   @GetMapping("/chat-list")
@@ -45,6 +48,8 @@ public class ChatRoomController {
   public String getChatRoom(Model model, @PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 상세조회
     ChatRoomDto room = chatroomService.getChatRoomById(chatRoomId, member);
+    List<ChatMessageDto> messages = chatMessageService.getMessageByRoom(chatRoomId, member);
+    model.addAttribute("messages", messages);
     model.addAttribute("room", room);
     model.addAttribute("chatRoomId", chatRoomId);
     model.addAttribute("currentUserId", member.getId());
