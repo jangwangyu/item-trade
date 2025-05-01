@@ -29,12 +29,24 @@ public class Member {
   @Id
   private Long id;
 
+  // 소셜 로그인 시 사용되는 정보
+  private String provider;
+  private String providerId;
+
+  @Column(nullable = false)
   private String email;
+
   private String password;
+
+  @Column(nullable = true)
   private String name;
+  @Column(nullable = true)
   private String nickName;
+  @Column(nullable = true)
   private String phoneNumber;
+  @Column(nullable = true)
   private String profileImageUrl;
+  @Column(nullable = true)
   private LocalDate birthDay;
 
   private boolean deleted = false;

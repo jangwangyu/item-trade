@@ -10,10 +10,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public class MemberOauth2 {
   public static Member create(OAuth2UserRequest request, OAuth2User oauth2User) {
+    String provider = request.getClientRegistration().getRegistrationId();
+
     return switch (request.getClientRegistration().getRegistrationId()) {
       case "kakao" -> {
         Map<String, Object> attributes = oauth2User.getAttribute("kakao_account");
+        String providerId = oauth2User.getAttribute("id").toString(); // kakaoId
         yield Member.builder()
+            .provider(provider)
+            .providerId(providerId)
             .email(attributes.get("email").toString())
             .nickName(((Map) attributes.get("profile")).get("nickname").toString())
             .birthDay(getBirthDay(attributes))
@@ -22,7 +27,10 @@ public class MemberOauth2 {
       }
       case "google" -> {
         Map<String, Object> attributes = oauth2User.getAttributes();
+        String providerId = attributes.get("sub").toString(); // googleId
         yield Member.builder()
+            .provider(provider)
+            .providerId(providerId)
             .email(attributes.get("email").toString())
             .name(attributes.get("name").toString())
             .nickName(attributes.get("given_name").toString())
