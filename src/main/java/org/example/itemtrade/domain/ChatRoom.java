@@ -52,4 +52,31 @@ public class ChatRoom {
     return chatRoom;
   }
 
+  private boolean deletedByBuyer = false;
+  private boolean deletedBySeller = false;
+
+  public void deleted(Member member){
+    if(this.buyer.getId().equals(member.getId())) {
+      this.deletedByBuyer = true;
+    } else if(this.seller.getId().equals(member.getId())) {
+      this.deletedBySeller = true;
+    } else {
+      throw new IllegalArgumentException("권한이 없습니다.");
+    }
+  }
+
+  public boolean isVisible(Member member) {
+    if(this.buyer.equals(member)) return !deletedByBuyer;
+    if(this.seller.equals(member)) return !deletedBySeller;
+    return false;
+  }
+
+  public void restoreFor(Member member){
+    if(this.buyer != null && buyer.equals(member)) {
+      this.deletedBySeller = false;
+    }else if (this.seller != null && seller.equals(member)) {
+      this.deletedByBuyer = false;
+    }
+  }
+
 }

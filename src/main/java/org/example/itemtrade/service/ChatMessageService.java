@@ -26,21 +26,25 @@ public class ChatMessageService {
   public ChatMessageDto sendMessage(Long roomId, ChatMessageRequest request) {
     //사용자 존재하는지 확인
     Long senderId = request.getSenderId();
-    // String email = principal.getName();
+
     Member sender = memberRepository.findById(senderId).orElseThrow(() ->
         new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
-    return sendMessage(roomId, sender, request.getContent());
+
+    return sendMessage(roomId, sender, request.getContent(), request.getType());
   }
 
   @Transactional
-  public ChatMessageDto sendMessage(Long roomId, Member sender, String content) {
+  public ChatMessageDto sendMessage(Long roomId, Member sender, String content, String type) {
     // 채팅방 존재하는지 확인
     ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
         new IllegalArgumentException("채팅방이 존재하지 않습니다."));
 
-    ChatMessage message = ChatMessage.of(sender, chatRoom, content);
-    chatMessageRepository.saveAndFlush(message);
+    chatRoom.restoreFor(sender);
+
+    chatRoomRepository.save(chatRoom);
+    ChatMessage message = ChatMessage.of(sender, chatRoom, content, type);
+    chatMessageRepository.save(message);
 
     System.out.println("Message saved: " + message.getContent());
 

@@ -59,11 +59,11 @@ public class ChatRoomController {
 
 
   // 채팅방 삭제
-  @PostMapping("/{postId}/delete")
+  @PostMapping("/chat/{postId}/delete")
   public String deleteChatRoom(@PathVariable Long postId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 채팅방 삭제
     chatroomService.deleteChatRoom(postId, member);
 
-    return "redirect:/chatrooms";
+    return "redirect:/chat-list";
   }
 }

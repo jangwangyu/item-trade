@@ -33,9 +33,7 @@ public class ChatroomService {
 
     return chatroomRepository.findByItemPostAndBuyerAndSeller(post, buyer, seller)
         .orElseGet(() -> {
-          System.out.println("✅ ChatRoom 생성 요청: buyer=" + buyer.getId() + ", seller=" + seller.getId() + ", post=" + post.getId());
           ChatRoom chatRoom = ChatRoom.of(buyer, seller, post);
-          System.out.println("💾 ChatRoom 저장 시도: " + chatRoom);
           return chatroomRepository.save(chatRoom);
         });
   }
@@ -45,8 +43,8 @@ public class ChatroomService {
     if (member == null) {
       throw new IllegalStateException("로그인한 사용자만 채팅 목록을 조회할 수 있습니다.");
     }
-    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyer(member);
-    List<ChatRoom> asSeller = chatroomRepository.findAllBySeller(member);
+    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyerAndDeletedByBuyerFalse(member);
+    List<ChatRoom> asSeller = chatroomRepository.findAllBySellerAndDeletedBySellerFalse(member);
 
     // 구매자 채팅방과 판매자 채팅방을 합쳐서 하나의 리스트로 반환
     return Stream.concat(asBuyer.stream(), asSeller.stream())
@@ -55,8 +53,6 @@ public class ChatroomService {
           ChatMessage lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(room.getId()).orElse(null);
           String lastContent = (lastMessage != null) ? lastMessage.getContent() : "";
           Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, member);
-          System.out.println("📌 room.id = " + room.getId());
-          System.out.println("📬 room " + room.getId() + " unreadCount: " + unreadCount);
           return ChatRoomDto.from(room, unreadCount, lastContent);
         })
         .toList();
@@ -78,9 +74,12 @@ public class ChatroomService {
     ChatRoom chatRoom = chatroomRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
-    if(!chatRoom.getBuyer().getId().equals(user.getMember().getId())) {
+    boolean isUser = chatRoom.getBuyer().getId().equals(user.getId()) || chatRoom.getSeller().getId().equals(user.getId());
+
+    if(!isUser) {
       throw new IllegalArgumentException("채팅방 삭제 권한이 없습니다.");
     }
-    chatroomRepository.deleteById(chatRoom.getId());
+    chatRoom.deleted(user);
+    chatroomRepository.save(chatRoom);
   }
 }
