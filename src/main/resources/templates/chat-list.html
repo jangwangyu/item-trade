@@ -53,6 +53,12 @@
         <div class="fw-bold text-primary" th:text="${#numbers.formatInteger(chat.itemPrice(), 3, 'COMMA') + '원'}">280,000원</div>
         <span class="badge bg-danger mt-1" th:if="${chat.unreadCount >= 0}"
               th:text="${chat.unreadCount}">1</span>
+
+        <!-- 삭제 버튼 -->
+        <form th:action="@{/chat/{roomId}/delete(roomId=${chat.id})}" method="post" style="display:inline;"
+              onsubmit="return confirm('정말 이 채팅방을 삭제하시겠습니까?');">
+          <button type="submit" class="btn btn-sm btn-outline-danger mt-1">삭제</button>
+        </form>
       </div>
 
     </a>
