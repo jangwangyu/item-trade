@@ -49,7 +49,11 @@
         <div>
           <div class="chat-bubble chat-left shadow-sm">
             <strong class="d-block mb-1" th:text="${message.senderNickname}">상대방</strong>
-            <span th:text="${message.content}">메시지 내용</span>
+            <span th:if="${message.type == 'text'}" th:text="${message.content}"></span>
+            <img th:if="${message.type == 'image'}"
+                 th:src="@{${message.content}}"
+                 class="img-fluid rounded"
+                 style="max-width: 200px;" />
           </div>
           <div class="text-muted small mt-1 ms-1" th:text="${#temporals.format(message.createdAt, 'a h:mm')}">오전 10:15</div>
         </div>
@@ -60,7 +64,11 @@
         <div>
           <div class="chat-bubble chat-right shadow-sm text-end">
             <strong class="d-block mb-1">나</strong>
-            <span th:text="${message.content}">메시지 내용</span>
+            <span th:if="${message.type == 'text'}" th:text="${message.content}"></span>
+            <img th:if="${message.type == 'image'}"
+                 th:src="@{${message.content}}"
+                 class="img-fluid rounded"
+                 style="max-width: 200px;" />
           </div>
 
           <div class="text-muted small mt-1 text-end">
@@ -76,10 +84,18 @@
   </div>
 
   <!-- 메시지 입력창 -->
+  <!-- 텍스트 메시지 전송 -->
   <form id="chatForm" class="d-flex gap-2 border-top pt-3">
     <input id="chatInput" type="text" class="form-control" placeholder="메시지를 입력하세요">
     <button type="submit" class="btn btn-primary">전송</button>
   </form>
+
+  <!-- 이미지 메시지 전송 -->
+  <form id="imageForm" class="d-flex gap-2 mt-2">
+    <input type="file" id="imageInput" accept="image/*" class="form-control">
+    <button type="submit" class="btn btn-secondary">이미지 전송</button>
+  </form>
+
 
   <script th:inline="javascript">
     window.roomId = /*[[${chatRoomId}]]*/ 0;

@@ -51,7 +51,7 @@ public class PostService {
   // 게시글 작성
   public ItemPostResponse createPost(ItemPostCreateRequest request, Member member, MultipartFile image)
       throws IOException {
-    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/";
+    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
     // 1. 디렉토리 확인 및 생성
     File directory = new File(uploadDir);
     if (!directory.exists()) {
@@ -68,7 +68,7 @@ public class PostService {
     image.transferTo(saveFile); // 여기서 오류났던 것
 
     // 4. DTO -> Entity
-    request.setImagePath("/uploads/" + storedFilename); // DB 저장용 URL
+    request.setImagePath("/uploads/post/" + storedFilename); // DB 저장용 URL
     ItemPost post = request.of(member);
     postRepository.save(post);
     // 5. Entity -> DTO
@@ -86,13 +86,13 @@ public class PostService {
 
     // 이미지 업로드 처리
     if (image != null && !image.isEmpty()) {
-      String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/";
+      String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
       String originalFilename = image.getOriginalFilename();
       String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
       String storedFilename = UUID.randomUUID() + ext;
       File file = new File(uploadDir + storedFilename);
       image.transferTo(file);
-      post.setImagePath("/uploads/" + storedFilename);
+      post.setImagePath("/uploads/post/" + storedFilename);
     }
 
     // 게시글 정보 업데이트

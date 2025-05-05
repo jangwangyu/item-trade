@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.itemtrade.dto.SoftDelete;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Builder
 @NoArgsConstructor
@@ -19,7 +21,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class ChatMessage {
+public class ChatMessage implements SoftDelete {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "chat_message_id")
@@ -34,8 +36,14 @@ public class ChatMessage {
 
   private String content;
 
+  private String type;
+
   private boolean isRead;
+
+  @CreationTimestamp
   private LocalDateTime createdAt;
+
+  private boolean deleted = false;
 
   public ChatMessage(Member sender, ChatRoom chatRoom, String content) {
     this.sender = sender;
@@ -45,14 +53,24 @@ public class ChatMessage {
     this.createdAt = LocalDateTime.now();
   }
 
-  public static ChatMessage of(Member sender, ChatRoom chatRoom, String content) {
+  public static ChatMessage of(Member sender, ChatRoom chatRoom, String content, String type) {
     ChatMessage message = new ChatMessage();
     message.sender = sender;
     message.chatRoom = chatRoom;
     message.content = content;
     message.isRead = false;
+    message.type = type;
     message.createdAt = LocalDateTime.now();
     return message;
   }
 
+  @Override
+  public void softDelete() {
+    this.deleted = true;
+  }
+
+  @Override
+  public boolean isDeleted() {
+    return this.deleted;
+  }
 }

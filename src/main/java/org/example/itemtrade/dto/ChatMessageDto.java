@@ -10,7 +10,8 @@ public record ChatMessageDto(
     String senderNickname,
     boolean isRead,
     LocalDateTime createdAt,
-    Long senderId
+    Long senderId,
+    String type
 ) {
     public static ChatMessageDto from(ChatMessage message) {
         return new ChatMessageDto(
@@ -19,7 +20,8 @@ public record ChatMessageDto(
             message.getSender().getNickName(),
             message.isRead(),
             message.getCreatedAt(),
-            message.getSender().getId()
+            message.getSender().getId(),
+            message.getType()
         );
     }
 }
