@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.itemtrade.dto.SoftDelete;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.enums.Category;
 
@@ -29,7 +30,7 @@ import org.example.itemtrade.enums.Category;
 @Getter
 @Setter
 @Entity
-public class ItemPost { // 판매글
+public class ItemPost implements SoftDelete { // 판매글
   @Id
   @Column(name = "item_post_id")
   @GeneratedValue
@@ -88,6 +89,18 @@ public class ItemPost { // 판매글
     this.description = request.getDescription();
     this.price = request.getPrice();
     this.category = request.getCategory();
+  }
+
+  private boolean deleted = false;
+
+  @Override
+  public void softDelete() {
+    this.deleted = true;
+  }
+
+  @Override
+  public boolean isDeleted() {
+    return this.deleted;
   }
 
 }

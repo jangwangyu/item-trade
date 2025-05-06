@@ -9,10 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.itemtrade.dto.SoftDelete;
 
 @Getter
 @Entity
-public class ItemImage {
+public class ItemImage implements SoftDelete {
   @Id
   @Column(name = "item_image_id")
   @GeneratedValue
@@ -32,4 +33,15 @@ public class ItemImage {
     return image;
   }
 
+  private boolean deleted = false;
+
+  @Override
+  public void softDelete() {
+    this.deleted = true;
+  }
+
+  @Override
+  public boolean isDeleted() {
+    return this.deleted;
+  }
 }

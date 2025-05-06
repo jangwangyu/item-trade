@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.itemtrade.dto.SoftDelete;
 
 @Builder
 @NoArgsConstructor
@@ -21,7 +22,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class ChatRoom {
+public class ChatRoom implements SoftDelete {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "chat_id")
   @Id
@@ -31,6 +32,7 @@ public class ChatRoom {
 
   private LocalDateTime createAt;
 
+  private boolean deleted = false;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer_id")
@@ -79,4 +81,13 @@ public class ChatRoom {
     }
   }
 
+  @Override
+  public void softDelete() {
+    this.deleted = true;
+  }
+
+  @Override
+  public boolean isDeleted() {
+    return this.deleted;
+  }
 }
