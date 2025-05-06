@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @AllArgsConstructor
-public class CustomOAuth2User implements OAuth2User { // Member 객체와 OAuth2 로그인 정보를 연결해주는 용도
+public class CustomOAuth2User implements OAuth2User, UserType { // Member 객체와 OAuth2 로그인 정보를 연결해주는 용도
 
   @Getter
   private final Member member;
@@ -31,4 +31,10 @@ public class CustomOAuth2User implements OAuth2User { // Member 객체와 OAuth2
   public String getName() {
     return this.member.getNickName();
   }
+
+  @Override
+  public String getLoginType() {
+    return "OAUTH2";
+  }
+
 }
