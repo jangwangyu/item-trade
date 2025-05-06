@@ -1,5 +1,6 @@
 package org.example.itemtrade.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.example.itemtrade.domain.ChatMessage;
@@ -14,4 +15,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
   long countByChatRoomAndSenderNotAndIsReadFalse(ChatRoom room, Member currentUser);
   // 현재 사용자가 보낸 메시지 중 마지막 메시지 조회
   Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);  // 특정 채팅방의 마지막 메시지 조회
+
+  Collection<ChatMessage> findAllBySender(Member sender);
 }
