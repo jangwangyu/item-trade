@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import lombok.Setter;
 import org.example.itemtrade.dto.SoftDelete;
 
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Setter
 @Getter
@@ -89,5 +90,14 @@ public class ChatRoom implements SoftDelete {
   @Override
   public boolean isDeleted() {
     return this.deleted;
+  }
+
+  public Member getOpponent(Member me) {
+    if (this.buyer.equals(me)) {
+      return this.seller;
+    } else if (this.seller.equals(me)) {
+      return this.buyer;
+    }
+    throw new IllegalArgumentException("해당 사용자는 채팅방의 멤버가 아닙니다.");
   }
 }
