@@ -10,17 +10,22 @@
   <!-- 내 게시글 -->
   <h3>내 게시글</h3>
   <ul class="list-group mb-4">
-    <li class="list-group-item" th:each="post : ${myPosts}">
-      <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}">제목</a>
-      <span class="float-end" th:text="|${post.price}원|"></span>
+    <li class="list-group-item" th:each="posts : ${posts}">
+      <a th:href="@{'/posts/' + ${posts.id}}" th:text="${posts.title}">제목</a>
+      <span class="float-end" th:text="${#numbers.formatInteger(posts.price, 3, 'COMMA') + '원'}"></span>
     </li>
   </ul>
 
-  <!-- 찜한 게시글 -->
-  <h3>찜한 게시글</h3>
-  <ul class="list-group mb-5">
-    <li class="list-group-item" th:each="post : ${likedPosts}">
-      <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}">제목</a>
+  <!-- 차단한 회원 목록 -->
+  <h3 class="mt-5">차단한 회원 목록</h3>
+  <ul class="list-group mb-4">
+    <li class="list-group-item" th:each="blocked : ${blockedMembers}">
+      <span th:text="${blocked.nickName}">차단한 사용자 닉네임</span>
+
+      <form th:action="@{'/unblock/' + ${blocked.id}}" method="post" class="d-inline ms-3"
+            onsubmit="return confirm('정말 차단을 해제하시겠습니까?');">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">차단 해제</button>
+      </form>
     </li>
   </ul>
 
@@ -29,17 +34,26 @@
   <form th:action="@{/mypage/update}" method="post">
     <div class="mb-3">
       <label for="username" class="form-label">닉네임</label>
-      <input type="text" class="form-control" id="username" name="username" th:value="${user.username}">
+      <input type="text" class="form-control" id="username" name="username" th:value="${member.getNickName()}" th:readonly="${loginType == 'OAUTH2'}">
     </div>
     <div class="mb-3">
       <label for="email" class="form-label">이메일</label>
-      <input type="email" class="form-control" id="email" name="email" th:value="${user.email}">
+      <input type="email" class="form-control" id="email" name="email" th:value="${member.getEmail()}" th:readonly="${loginType == 'OAUTH2'}">
     </div>
     <div class="mb-3">
       <label for="password" class="form-label">비밀번호 변경</label>
-      <input type="password" class="form-control" id="password" name="password">
+      <input type="password" class="form-control" id="password" name="password" th:readonly="${loginType == 'OAUTH2'}">
     </div>
-    <button type="submit" class="btn btn-primary">수정</button>
+    <button type="submit" class="btn btn-primary" th:if="${loginType == 'FORM'}">수정</button>
+  </form>
+  <!-- OAuth2 유저는 안내 메시지 출력 -->
+  <div class="alert alert-warning mt-2" th:if="${loginType == 'OAUTH2'}">
+    소셜 로그인 사용자는 정보 수정이 불가능합니다.
+  </div>
+  <form th:action="@{/mypage/delete}" method="post" class="mt-4">
+    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('정말 탈퇴하시겠습니까?');">
+      회원 탈퇴
+    </button>
   </form>
 </section>
 </body>
