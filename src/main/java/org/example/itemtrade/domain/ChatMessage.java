@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import org.example.itemtrade.dto.SoftDelete;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Setter
 @Getter
@@ -44,6 +45,7 @@ public class ChatMessage implements SoftDelete {
   private LocalDateTime createdAt;
 
   private boolean deleted = false;
+
 
   public ChatMessage(Member sender, ChatRoom chatRoom, String content) {
     this.sender = sender;
