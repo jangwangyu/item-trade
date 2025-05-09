@@ -11,12 +11,15 @@ public record ChatRoomDto(
     String buyerNickname,
     String sellerNickname,
     Long unreadCount,
-    String lastMessage
+    String lastMessage,
+    Long opponentId,
+    boolean isBlocked
+
 )
 
 {
 
-    public static ChatRoomDto from(ChatRoom chatRoom, Long unreadCount, String lastMessage) {
+    public static ChatRoomDto from(ChatRoom chatRoom, Long unreadCount, String lastMessage,Long opponentId, boolean isBlocked) {
         // 구매자와 판매자가 null일 수 있으므로 null 체크 후 기본값 설정
         String buyerNickname = (chatRoom.getBuyer() != null) ? chatRoom.getBuyer().getNickName() : "Unknown";
         String sellerNickname = (chatRoom.getSeller() != null) ? chatRoom.getSeller().getNickName() : "Unknown";
@@ -29,7 +32,9 @@ public record ChatRoomDto(
             buyerNickname,
             sellerNickname,
             unreadCount,
-            lastMessage
+            lastMessage,
+            opponentId,
+            isBlocked
         );
     }
 }
