@@ -36,6 +36,16 @@
   <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
     <h4 class="mb-0" th:text="${room.itemTitle()}">아이템 제목</h4>
     <span class="text-primary fw-semibold fs-5" th:text="${#numbers.formatInteger(room.itemPrice(), 3, 'COMMA') + '원'}">50,000원</span>
+
+    <!-- 차단 버튼 -->
+    <form th:action="@{'/block/' + ${room.opponentId}}" method="post" th:if="${!room.blocked}" onsubmit="return confirm('정말 이 사용자를 차단하시겠습니까?');">
+      <button type="submit" class="btn btn-outline-danger btn-sm">차단</button>
+    </form>
+
+    <!-- 차단 해제 버튼 -->
+    <form th:action="@{'/block/' + ${room.opponentId}}" method="post" th:if="${room.blocked}" onsubmit="return confirm('정말 차단을 해제하시겠습니까?');">
+      <button type="submit" class="btn btn-outline-secondary btn-sm">차단 해제</button>
+    </form>
   </div>
 
   <!-- 채팅 내용 (스크롤 영역) -->
