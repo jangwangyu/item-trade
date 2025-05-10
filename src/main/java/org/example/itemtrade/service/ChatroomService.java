@@ -22,6 +22,7 @@ public class ChatroomService {
   private final ChatRoomRepository chatroomRepository;
   private final ItemPostRepository itemPostRepository;
   private final ChatMessageRepository chatMessageRepository;
+  private final MemberService memberService;
 
   // 채팅방 생성
   public ChatRoom createChatRoom(Member buyer, Long postId) {
@@ -49,21 +50,33 @@ public class ChatroomService {
     // 구매자 채팅방과 판매자 채팅방을 합쳐서 하나의 리스트로 반환
     return Stream.concat(asBuyer.stream(), asSeller.stream())
         .distinct()
-        .map(room -> {
-          ChatMessage lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(room.getId()).orElse(null);
-          String lastContent = (lastMessage != null) ? lastMessage.getContent() : "";
-          Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, member);
-          return ChatRoomDto.from(room, unreadCount, lastContent);
+        .filter(room -> {
+          Member opponent = room.getOpponent(member);
+          // 차단된 회원의 채팅방은 제외
+          return !memberService.isMemberBlocked(member, opponent) // 내가 상대를 차단 안함
+          && !memberService.isMemberBlocked(opponent, member); // 상대가 나를 차단 안함
         })
+        .map(room -> getChatRoomDto(member, room))
         .toList();
   }
+  // 메소드 분리
+  private ChatRoomDto getChatRoomDto(Member currentUser, ChatRoom room) {
+    Member opponent = room.getOpponent(currentUser);
+    boolean isBlocked = memberService.isMemberBlocked(currentUser, opponent);
+
+    ChatMessage lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(room.getId()).orElse(null);
+    String lastContent = (lastMessage != null) ? lastMessage.getContent() : "";
+    Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, currentUser);
+
+    return ChatRoomDto.from(room, unreadCount, lastContent,opponent.getId() ,isBlocked);
+  }
+
 
   // 단일 채팅방 조회
   public ChatRoomDto getChatRoomById(Long id, Member member) {
     return chatroomRepository.findById(id)
         .map(room -> {
-          Long unreadCount = chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(room, member);
-          return ChatRoomDto.from(room, unreadCount, null);
+          return getChatRoomDto(member, room);
         })
         .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
   }
