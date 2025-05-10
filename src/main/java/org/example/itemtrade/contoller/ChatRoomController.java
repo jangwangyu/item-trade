@@ -8,12 +8,14 @@ import org.example.itemtrade.dto.ChatMessageDto;
 import org.example.itemtrade.dto.ChatRoomDto;
 import org.example.itemtrade.service.ChatMessageService;
 import org.example.itemtrade.service.ChatroomService;
+import org.example.itemtrade.service.MemberService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
@@ -21,6 +23,7 @@ public class ChatRoomController {
 
   private final ChatroomService chatroomService;
   private final ChatMessageService chatMessageService;
+  private final MemberService memberService;
 
   // 채팅방 목록
   @GetMapping("/chat-list")
@@ -65,5 +68,16 @@ public class ChatRoomController {
     chatroomService.deleteChatRoom(postId, member);
 
     return "redirect:/chat-list";
+  }
+
+  // 회원 차단
+  @PostMapping("/block/{targetId}")
+  public String blockMember(@PathVariable Long targetId, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam(required = false) Long chatRoomId) {
+
+    Member blocker = member.getMember();
+    Member blocked = memberService.getMemberId(targetId);
+
+    memberService.blockMember(blocker, blocked);
+    return "redirect:/mypage";
   }
 }

@@ -38,6 +38,15 @@ public class MyPageController {
     return "/mypage";
   }
 
+  // 차단해제
+  @PostMapping("/unblock/{blockedId}")
+  public String unblockMember(@AuthenticationPrincipal UserType user, @PathVariable Long blockedId) {
+    Member member = user.getMember();
+    Member blockedMember = memberService.getMemberId(blockedId);
+    memberService.unBlockMember(member, blockedMember);
+    return "redirect:/mypage";
+  }
+
   // 회원 탈퇴
   @PostMapping("/mypage/delete")
   public String deleteMember(@AuthenticationPrincipal UserType user) {
