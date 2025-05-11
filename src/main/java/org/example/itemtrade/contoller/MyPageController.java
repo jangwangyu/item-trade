@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.Oauth2.UserType;
+import org.example.itemtrade.dto.request.MemberUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.service.MemberService;
 import org.example.itemtrade.service.MyPageService;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class MyPageController {
   // 마이페이지
   @GetMapping("/mypage")
   public String myPage(@AuthenticationPrincipal UserType user, Model model) {
-    Member member = user.getMember();
+    Member member = memberService.getMember(user.getMember());
     String loginType = user.getLoginType();
 
     List<ItemPostResponse> posts = myPageService.getMyPosts(member);
@@ -36,6 +38,14 @@ public class MyPageController {
     model.addAttribute("blockedMembers", blockedMembers);
 
     return "/mypage";
+  }
+
+  // 회원정보 수정
+  @PutMapping("/mypage/update")
+  public String updateMember(@AuthenticationPrincipal UserType user, MemberUpdateRequest memberUpdateRequest) {
+    Member member = user.getMember();
+    memberService.updateMember(member, memberUpdateRequest, user);
+    return "redirect:/mypage";
   }
 
   // 차단해제

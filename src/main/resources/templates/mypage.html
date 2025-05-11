@@ -32,29 +32,50 @@
   <!-- 내 정보 수정 폼 -->
   <h2 class="mt-4">내 정보 수정</h2>
   <form th:action="@{/mypage/update}" method="post">
+    <input type="hidden" name="_method" value="put" />
     <div class="mb-3">
       <label for="username" class="form-label">닉네임</label>
-      <input type="text" class="form-control" id="username" name="username" th:value="${member.getNickName()}" th:readonly="${loginType == 'OAUTH2'}">
+      <input type="text" class="form-control" id="username" name="username"
+             th:value="${member.nickName}" th:readonly="${loginType == 'OAUTH2'}">
     </div>
+
     <div class="mb-3">
       <label for="email" class="form-label">이메일</label>
-      <input type="email" class="form-control" id="email" name="email" th:value="${member.getEmail()}" th:readonly="${loginType == 'OAUTH2'}">
+      <input type="email" class="form-control" id="email" name="email"
+             th:value="${member.email}" th:readonly="${loginType == 'OAUTH2'}">
     </div>
+
     <div class="mb-3">
       <label for="password" class="form-label">비밀번호 변경</label>
-      <input type="password" class="form-control" id="password" name="password" th:readonly="${loginType == 'OAUTH2'}">
+      <input type="password" class="form-control" id="password" name="password"
+             th:readonly="${loginType == 'OAUTH2'}">
     </div>
-    <button type="submit" class="btn btn-primary" th:if="${loginType == 'FORM'}">수정</button>
+
+    <!-- 자기소개 입력 필드 (항상 수정 가능) -->
+    <div class="mb-3">
+      <label for="introduction" class="form-label">자기소개</label>
+      <textarea class="form-control" id="introduction" name="introduction" rows="4"
+                th:text="${member.getIntroduction()}"></textarea>
+    </div>
+
+    <!-- 모든 로그인 방식에서 자기소개는 수정 가능하므로 항상 표시 -->
+    <button type="submit" class="btn btn-primary">수정</button>
   </form>
-  <!-- OAuth2 유저는 안내 메시지 출력 -->
+
+  <!-- OAuth2 유저에게 다른 항목 수정 불가 안내만 출력 -->
   <div class="alert alert-warning mt-2" th:if="${loginType == 'OAUTH2'}">
-    소셜 로그인 사용자는 정보 수정이 불가능합니다.
+    닉네임, 이메일, 비밀번호는 소셜 로그인 사용자는 수정할 수 없습니다.
+    자기소개는 수정 가능합니다.
   </div>
+
+  <!-- 회원 탈퇴 -->
   <form th:action="@{/mypage/delete}" method="post" class="mt-4">
-    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('정말 탈퇴하시겠습니까?');">
+    <button type="submit" class="btn btn-outline-danger"
+            onclick="return confirm('정말 탈퇴하시겠습니까?');">
       회원 탈퇴
     </button>
   </form>
+
 </section>
 </body>
 </html>
