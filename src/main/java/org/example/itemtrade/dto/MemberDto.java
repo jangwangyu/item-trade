@@ -11,6 +11,7 @@ public record MemberDto(
     String profileImageUrl,
     LocalDate birthDay,
     String role) {
+
   public static MemberDto from(Member member) {
       return new MemberDto(
           member.getId(),
@@ -22,14 +23,4 @@ public record MemberDto(
           member.getRole());
   }
 
-  public static Member toEntity(MemberDto memberDto) {
-    return Member.builder()
-        .id(memberDto.id)
-        .email(memberDto.email())
-        .nickName(memberDto.nickName())
-        .profileImageUrl(memberDto.profileImageUrl())
-        .birthDay(memberDto.birthDay())
-        .role(memberDto.role())
-        .build();
-  }
 }

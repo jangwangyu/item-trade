@@ -4,6 +4,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.domain.MemberBlock;
+import org.example.itemtrade.dto.MemberProfileDto;
+import org.example.itemtrade.dto.Oauth2.UserType;
+import org.example.itemtrade.dto.request.MemberUpdateRequest;
+import org.example.itemtrade.enums.TradeStatus;
+import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
 import org.example.itemtrade.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +21,24 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final MemberBlockRepository memberBlockRepository;
+  private final ItemPostRepository itemPostRepository;
+
+  // 회원 수정
+  public void updateMember(Member member, MemberUpdateRequest memberUpdateRequest, UserType userType) {
+    Member currentUser = getMemberId(member.getId());
+
+    if("FORM".equals(userType.getLoginType())) {
+      currentUser.setNickName(memberUpdateRequest.getNickName());
+    }
+
+    if (memberUpdateRequest.getIntroduction() != null) {
+      currentUser.setIntroduction(memberUpdateRequest.getIntroduction());
+    }
+
+    currentUser.setProfileImageUrl(memberUpdateRequest.getProfileImageUrl());
+
+    memberRepository.save(currentUser);
+  }
 
   // 회원 차단
   public void blockMember(Member blocker, Member blocked) {

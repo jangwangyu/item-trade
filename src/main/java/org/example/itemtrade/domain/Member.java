@@ -3,11 +3,13 @@ package org.example.itemtrade.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -16,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +27,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +55,13 @@ public class Member {
   @Column(nullable = true)
   private LocalDate birthDay;
 
+  private String introduction;
+
   private boolean deleted = false;
+
+  @CreatedDate
+  @Column(updatable = false)
+  private LocalDateTime createdAt;
 
   private String role;
 

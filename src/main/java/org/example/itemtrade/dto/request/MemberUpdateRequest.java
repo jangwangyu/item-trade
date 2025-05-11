@@ -8,4 +8,7 @@ public class MemberUpdateRequest {
   private String nickName;
 
   private String profileImageUrl;
+
+  // 자기소개
+  private String introduction;
 }
