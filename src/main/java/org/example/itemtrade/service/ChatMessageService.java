@@ -31,11 +31,11 @@ public class ChatMessageService {
         new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
 
-    return sendMessage(roomId, sender, request.getContent(), request.getType());
+    return sendMessages(roomId, sender, request.getContent(), request.getType());
   }
 
   @Transactional
-  public ChatMessageDto sendMessage(Long roomId, Member sender, String content, String type) {
+  public ChatMessageDto sendMessages(Long roomId, Member sender, String content, String type) {
     // 채팅방 존재하는지 확인
     ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
         new IllegalArgumentException("채팅방이 존재하지 않습니다."));
