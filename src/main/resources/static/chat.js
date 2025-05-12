@@ -2,30 +2,34 @@ document.addEventListener('DOMContentLoaded', function () {
   const roomId = window.roomId;
   const senderId = window.senderId;
 
-  console.log('roomId:', roomId);
-  console.log('senderId:', senderId);
-
   const socket = new SockJS('http://localhost:8080/ws');
   const stompClient = Stomp.over(socket);
+
+  let initialized = false;
+  const messageQueue = [];
 
   // 1. 과거 메시지 불러오기
   fetch(`/chat/${roomId}/messages`)
   .then(response => response.json())
   .then(messages => {
     messages.forEach(msg => appendMessage(msg));
+    initialized = true;
+    messageQueue.forEach(msg => appendMessage(msg));
+    messageQueue.length = 0;
   });
 
-  // 2. WebSocket 연결 및 구독
-  stompClient.connect({}, function (frame) {
-    console.log('소켓 연결 성공:', frame);
-
+  // 2. WebSocket 연결 및 수신 구독
+  stompClient.connect({}, function () {
+    console.log('✅ 연결됨');
     stompClient.subscribe('/topic/chat/' + roomId, function (message) {
-      console.log('메시지 수신:', message);
       const msg = JSON.parse(message.body);
-      appendMessage(msg);
+      console.log('✅ 메시지 수신:', msg);
+      if (!initialized) {
+        messageQueue.push(msg);
+      } else {
+        appendMessage(msg);
+      }
     });
-  }, function (error) {
-    console.error('소켓 연결 실패:', error);
   });
 
   // 3. 텍스트 메시지 전송
@@ -47,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // 4. 이미지 메시지 전송
   document.getElementById("imageForm").addEventListener("submit", async function (e) {
     e.preventDefault();
-
     const fileInput = document.getElementById("imageInput");
     const file = fileInput.files[0];
     if (!file) return;
@@ -63,14 +66,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const imageUrl = await response.text();
 
-      // WebSocket으로 전송
       stompClient.send("/app/chat/" + roomId + "/send", {}, JSON.stringify({
         content: imageUrl,
         senderId: senderId,
         type: "image"
       }));
 
-      fileInput.value = ""; // 초기화
+      fileInput.value = "";
     } catch (err) {
       console.error("이미지 업로드 실패:", err);
     }
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function appendMessage(msg) {
   const isMine = Number(msg.senderId) === Number(window.senderId);
   const isImage = msg.type === 'image';
+  const chatBox = document.getElementById("chatBox");
 
   const wrapper = document.createElement("div");
   wrapper.className = "d-flex " + (isMine ? "justify-content-end align-items-start" : "align-items-start") + " gap-2";
@@ -94,6 +97,7 @@ function appendMessage(msg) {
       ? `<img src="${msg.content}" class="img-fluid rounded" style="max-width: 200px;">`
       : `<span>${msg.content}</span>`;
 
+  // 렌더링 분기
   if (isMine) {
     wrapper.innerHTML = `
       <div>
@@ -112,10 +116,14 @@ function appendMessage(msg) {
     `;
   } else {
     wrapper.innerHTML = `
-      <img src="/images/user1.png" class="profile-img" alt="상대방">
+      <a href="/opponent/${msg.senderId}">
+        <img src="/images/user1.png" class="profile-img" alt="상대방">
+      </a>
       <div>
-        <div class="chat-bubble chat-left shadow-sm">
+        <a href="/opponent/${msg.senderId}" class="text-decoration-none text-dark">
           <strong class="d-block mb-1">${msg.senderNickname}</strong>
+        </a>
+        <div class="chat-bubble chat-left shadow-sm">
           ${contentHtml}
         </div>
         <div class="text-muted small mt-1 ms-1">${time}</div>
@@ -123,6 +131,6 @@ function appendMessage(msg) {
     `;
   }
 
-  document.getElementById("chatBox").appendChild(wrapper);
-  document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+  chatBox.appendChild(wrapper);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
