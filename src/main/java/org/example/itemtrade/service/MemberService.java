@@ -83,4 +83,13 @@ public class MemberService {
         .map(MemberBlock::getBlocked)
         .toList();
   }
+  // 상대방 조회
+  public MemberProfileDto getMemberProfile(Long memberId) {
+    Member targetMember = getMemberId(memberId);
+    int sellCount = itemPostRepository.countBySellerAndStatus(targetMember, TradeStatus.COMPLETE);
+    int buyCount = itemPostRepository.countByBuyerAndStatus(targetMember, TradeStatus.COMPLETE);
+    int totalCount = sellCount + buyCount;
+
+    return MemberProfileDto.from(targetMember, totalCount);
+  }
 }
