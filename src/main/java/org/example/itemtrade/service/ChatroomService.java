@@ -1,13 +1,13 @@
 package org.example.itemtrade.service;
 
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.ChatMessage;
 import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatRoomDto;
+import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ChatMessageRepository;
 import org.example.itemtrade.repository.ChatRoomRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
@@ -35,6 +35,7 @@ public class ChatroomService {
     return chatroomRepository.findByItemPostAndBuyerAndSeller(post, buyer, seller)
         .orElseGet(() -> {
           ChatRoom chatRoom = ChatRoom.of(buyer, seller, post);
+          chatRoom.setTradeStatus(TradeStatus.TRADE);
           return chatroomRepository.save(chatRoom);
         });
   }
@@ -44,11 +45,12 @@ public class ChatroomService {
     if (member == null) {
       throw new IllegalStateException("로그인한 사용자만 채팅 목록을 조회할 수 있습니다.");
     }
-    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyerAndDeletedByBuyerFalse(member);
-    List<ChatRoom> asSeller = chatroomRepository.findAllBySellerAndDeletedBySellerFalse(member);
+//    List<ChatRoom> asBuyer = chatroomRepository.findAllByBuyerAndDeletedByBuyerFalse(member);
+//    List<ChatRoom> asSeller = chatroomRepository.findAllBySellerAndDeletedBySellerFalse(member);
+    List<ChatRoom> chatRooms = chatroomRepository.findAllByMemberOrderByLastMessage(member);
 
     // 구매자 채팅방과 판매자 채팅방을 합쳐서 하나의 리스트로 반환
-    return Stream.concat(asBuyer.stream(), asSeller.stream())
+    return chatRooms.stream()
         .distinct()
         .filter(room -> {
           Member opponent = room.getOpponent(member);
@@ -56,11 +58,12 @@ public class ChatroomService {
           return !memberService.isMemberBlocked(member, opponent) // 내가 상대를 차단 안함
           && !memberService.isMemberBlocked(opponent, member); // 상대가 나를 차단 안함
         })
-        .map(room -> getChatRoomDto(member, room))
+        .map(room -> getListChatRoom(member, room))
         .toList();
   }
+
   // 메소드 분리
-  private ChatRoomDto getChatRoomDto(Member currentUser, ChatRoom room) {
+  private ChatRoomDto getListChatRoom(Member currentUser, ChatRoom room) {
     Member opponent = room.getOpponent(currentUser);
     boolean isBlocked = memberService.isMemberBlocked(currentUser, opponent);
 
@@ -76,7 +79,7 @@ public class ChatroomService {
   public ChatRoomDto getChatRoomById(Long id, Member member) {
     return chatroomRepository.findById(id)
         .map(room -> {
-          return getChatRoomDto(member, room);
+          return getListChatRoom(member, room);
         })
         .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
   }
