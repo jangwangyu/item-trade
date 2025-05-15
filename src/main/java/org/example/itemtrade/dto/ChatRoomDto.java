@@ -1,7 +1,9 @@
 package org.example.itemtrade.dto;
 
 
+import java.util.Objects;
 import org.example.itemtrade.domain.ChatRoom;
+import org.example.itemtrade.enums.TradeStatus;
 
 public record ChatRoomDto(
     Long id,
@@ -13,7 +15,12 @@ public record ChatRoomDto(
     Long unreadCount,
     String lastMessage,
     Long opponentId,
-    boolean isBlocked
+    boolean isBlocked,
+    TradeStatus tradeStatus,
+    boolean isTradeSellerComplete,
+    boolean isTradeBuyerComplete,
+    Long buyerId,
+    Long sellerId
 
 )
 
@@ -34,7 +41,12 @@ public record ChatRoomDto(
             unreadCount,
             lastMessage,
             opponentId,
-            isBlocked
+            isBlocked,
+            chatRoom.getTradeStatus(),
+            chatRoom.isTradeSellerComplete(),
+            chatRoom.isTradeBuyerComplete(),
+            Objects.requireNonNull(chatRoom.getBuyer()).getId(),
+            Objects.requireNonNull(chatRoom.getSeller()).getId()
         );
     }
 }

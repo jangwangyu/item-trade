@@ -3,6 +3,7 @@ package org.example.itemtrade.dto.response;
 import java.time.LocalDateTime;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.enums.Category;
+import org.example.itemtrade.enums.TradeStatus;
 
 public record ItemPostResponse(
     Long id,
@@ -14,8 +15,8 @@ public record ItemPostResponse(
     LocalDateTime createdAt,
     String sellerNickname,
     Long sellerId,
-    String imagePath
-) {
+    String imagePath,
+    TradeStatus tradeStatus) {
   public static ItemPostResponse from(ItemPost post) {
     return new ItemPostResponse(
         post.getId(),
@@ -27,7 +28,8 @@ public record ItemPostResponse(
         post.getCreatedAt(),
         post.getSeller().getNickName(),
         post.getSeller().getId(),
-        post.getImagePath()
+        post.getImagePath(),
+        post.getStatus()
     );
   }
 
