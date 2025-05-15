@@ -24,6 +24,7 @@ import lombok.Setter;
 import org.example.itemtrade.dto.SoftDelete;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.enums.Category;
+import org.example.itemtrade.enums.TradeStatus;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,6 +48,9 @@ public class ItemPost implements SoftDelete { // 판매글
   private String imageUrl; // 이미지 URL
   private String imagePath;
 
+  @Enumerated(EnumType.STRING)
+  private TradeStatus status = TradeStatus.TRADE;// 뷰 노출용
+
 
 
   private LocalDateTime createdAt;
@@ -54,6 +58,10 @@ public class ItemPost implements SoftDelete { // 판매글
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_id")
   private Member seller;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "buyer_id")
+  private Member buyer;
 
   @OneToMany(mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemImage> images = new ArrayList<>();

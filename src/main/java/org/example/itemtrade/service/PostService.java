@@ -16,6 +16,7 @@ import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.request.ItemPostCreateRequest;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
+import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
 import org.springframework.http.HttpStatus;
@@ -95,6 +96,7 @@ public class PostService {
     // 4. DTO -> Entity
     request.setImagePath("/uploads/post/" + storedFilename); // DB 저장용 URL
     ItemPost post = request.of(member);
+    post.setStatus(TradeStatus.TRADE);
     postRepository.save(post);
     // 5. Entity -> DTO
     return ItemPostResponse.from(post);

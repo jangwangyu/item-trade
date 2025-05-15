@@ -40,6 +40,12 @@ public class ChatRoom implements SoftDelete {
 
   private boolean deleted = false;
 
+  private boolean tradeSellerComplete = false; // 판매자 거래 완료 여부
+  private boolean tradeBuyerComplete = false; // 구매자 거래 완료 여부
+
+  @Enumerated(EnumType.STRING)
+  private TradeStatus tradeStatus = TradeStatus.TRADE; // 기본값 = 거래 중
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer_id")
   private Member buyer;
