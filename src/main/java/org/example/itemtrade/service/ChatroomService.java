@@ -98,4 +98,70 @@ public class ChatroomService {
     chatRoom.deleted(user);
     chatroomRepository.save(chatRoom);
   }
+
+  // 거래 완료
+  public void completeTrade(Long id, Member user) {
+    // 채팅방이 존재하는지 확인
+    ChatRoom chatRoom = chatroomRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+    // 거래 완료 권한 체크
+    if(user.equals(chatRoom.getBuyer())) {
+      chatRoom.setTradeBuyerComplete(true);
+    } else if (user.equals(chatRoom.getSeller())) {
+      chatRoom.setTradeSellerComplete(true);
+    } else {
+      throw new IllegalArgumentException("거래 완료 권한이 없습니다.");
+    }
+
+    // 둘 다 true일 경우 완료 처리
+    if(chatRoom.isTradeSellerComplete() && chatRoom.isTradeBuyerComplete()) {
+      chatRoom.setTradeStatus(TradeStatus.COMPLETE);
+      chatRoom.getItemPost().setStatus(TradeStatus.COMPLETE);
+    }
+  }
+
+  // 거래 취소
+  public void cancelTrade(Long id, Member user) {
+    // 채팅방이 존재하는지 확인
+    ChatRoom chatRoom = chatroomRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+    // 취소 권한 체크
+    if(!chatRoom.getBuyer().equals(user) && !chatRoom.getSeller().equals(user)) {
+      throw new IllegalArgumentException("권한이 없습니다.");
+    }
+
+    if (chatRoom.getTradeStatus() == TradeStatus.CANCEL){
+      throw new IllegalArgumentException("이미 거래가 취소되었습니다.");
+    }
+    chatRoom.setTradeStatus(TradeStatus.CANCEL);
+
+    ItemPost post = chatRoom.getItemPost();
+    post.setStatus(TradeStatus.CANCEL);
+
+  }
+
+  // 거래 재시도
+  public void reopenTrade(Long id, Member user) {
+    // 채팅방이 존재하는지 확인
+    ChatRoom chatRoom = chatroomRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+    // 취소 권한 체크
+    if(!chatRoom.getBuyer().equals(user) && !chatRoom.getSeller().equals(user)) {
+      throw new IllegalArgumentException("권한이 없습니다.");
+    }
+
+    if (chatRoom.getTradeStatus() != TradeStatus.CANCEL){
+      throw new IllegalArgumentException("취소된 거래만 재거래가 가능합니다.");
+    }
+    chatRoom.setTradeStatus(TradeStatus.TRADE);
+
+    ItemPost post = chatRoom.getItemPost();
+    post.setStatus(TradeStatus.TRADE);
+    chatRoom.setTradeSellerComplete(false);
+    chatRoom.setTradeBuyerComplete(false);
+
+  }
 }

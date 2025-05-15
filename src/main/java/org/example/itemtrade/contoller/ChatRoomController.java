@@ -57,6 +57,9 @@ public class ChatRoomController {
     model.addAttribute("chatRoomId", chatRoomId);
     model.addAttribute("currentUserId", member.getId());
 
+    model.addAttribute("isSeller",room.sellerId().equals(member.getId()));
+    model.addAttribute("isBuyer", room.buyerId().equals(member.getId()));
+
     return "/chat";
   }
 
@@ -79,5 +82,32 @@ public class ChatRoomController {
 
     memberService.blockMember(blocker, blocked);
     return "redirect:/mypage";
+  }
+
+  // 거래 완료
+  @PostMapping("/chat/{chatRoomId}/complete")
+  public String completeTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+    // 거래 완료 처리
+    chatroomService.completeTrade(chatRoomId, member);
+
+    return "redirect:/chat/" + chatRoomId;
+  }
+
+  // 거래 취소
+  @PostMapping("/chat/{chatRoomId}/cancel")
+  public String cancelTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+    // 거래 취소 처리
+    chatroomService.cancelTrade(chatRoomId, member);
+
+    return "redirect:/chat/" + chatRoomId;
+  }
+
+  // 재거래
+  @PostMapping("/chat/{chatRoomId}/reopen")
+  public String reopenTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+    // 재거래 처리
+    chatroomService.reopenTrade(chatRoomId, member);
+
+    return "redirect:/chat/" + chatRoomId;
   }
 }
