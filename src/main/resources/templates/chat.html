@@ -37,6 +37,27 @@
     <h4 class="mb-0" th:text="${room.itemTitle()}">아이템 제목</h4>
     <span class="text-primary fw-semibold fs-5" th:text="${#numbers.formatInteger(room.itemPrice(), 3, 'COMMA') + '원'}">50,000원</span>
 
+    <!-- 거래 완료 버튼 -->
+    <form th:if="${isSeller and !room.tradeSellerComplete or isBuyer and !room.tradeBuyerComplete}"
+          th:action="@{/chat/{id}/complete(id=${room.id})}" method="post"
+          onsubmit="return confirm('거래를 완료하시겠습니까?');">
+      <button type="submit" class="btn btn-success">거래 완료</button>
+    </form>
+
+    <!-- 거래 취소 버튼 -->
+    <form th:if="${isSeller or isBuyer}"
+          th:action="@{/chat/{id}/cancel(id=${room.id})}" method="post"
+          onsubmit="return confirm('정말 거래를 취소하시겠습니까?');">
+      <button type="submit" class="btn btn-outline-danger">거래 취소</button>
+    </form>
+
+    <!-- 재거래 버튼 -->
+    <form th:if="${room.tradeStatus.name() == 'CANCEL' and (isSeller or isBuyer)}"
+          th:action="@{/chat/{id}/reopen(id=${room.id})}" method="post"
+          onsubmit="return confirm('재거래를 시작하시겠습니까?');">
+      <button type="submit" class="btn btn-warning">재거래 요청</button>
+    </form>
+
     <!-- 차단 버튼 -->
     <form th:action="@{'/block/' + ${room.opponentId}}" method="post" th:if="${!room.blocked}" onsubmit="return confirm('정말 이 사용자를 차단하시겠습니까?');">
       <button type="submit" class="btn btn-outline-danger btn-sm">차단</button>

@@ -41,9 +41,14 @@
     <h5 class="mb-1 fw-bold" th:text="${post.title}">게시글 제목</h5>
     <p class="mb-1 text-muted" th:text="${post.sellerNickname()}">작성자</p>
 
-    <!-- 카테고리 정보 -->
+    <!-- 카테고리 + 거래 상태 -->
     <p class="mb-1">
       <span class="badge bg-secondary" th:text="${post.categoryDisplayName}">카테고리</span>
+
+      <!-- 거래 상태 뱃지 -->
+      <span th:if="${post.tradeStatus.name() == 'TRADE'}" class="badge bg-secondary ms-1">거래가능</span>
+      <span th:if="${post.tradeStatus.name() == 'COMPLETE'}" class="badge bg-success ms-1">거래완료</span>
+      <span th:if="${post.tradeStatus.name() == 'CANCEL'}" class="badge bg-secondary ms-1">거래가능</span>
     </p>
 
     <!-- 가격 정보 -->
@@ -52,6 +57,7 @@
       <span th:if="${post.price == null}">가격 미정</span>
     </p>
   </a>
+
 
   <!-- 게시글 작성 버튼 -->
   <a class="btn btn-primary mt-4" th:href="@{/posts/new}">게시글 작성</a>

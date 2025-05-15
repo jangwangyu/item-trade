@@ -48,10 +48,19 @@
         </div>
       </div>
 
-      <!-- 오른쪽: 가격 + 뱃지 -->
+      <!-- 오른쪽: 가격 + 상태 + 삭제 -->
       <div class="text-end">
         <div class="fw-bold text-primary" th:text="${#numbers.formatInteger(chat.itemPrice(), 3, 'COMMA') + '원'}">280,000원</div>
-        <span class="badge bg-danger mt-1" th:if="${chat.unreadCount >= 0}"
+
+        <!-- 거래 상태 뱃지 -->
+        <div class="mt-1">
+          <span th:if="${chat.tradeStatus.name() == 'TRADE'}" class="badge bg-secondary">거래가능</span>
+          <span th:if="${chat.tradeStatus.name() == 'COMPLETE'}" class="badge bg-success">거래완료</span>
+          <span th:if="${chat.tradeStatus.name() == 'CANCEL'}" class="badge bg-danger">거래취소</span>
+        </div>
+
+        <!-- 안읽은 메시지 뱃지 -->
+        <span class="badge bg-danger mt-1" th:if="${chat.unreadCount > 0}"
               th:text="${chat.unreadCount}">1</span>
 
         <!-- 삭제 버튼 -->
@@ -64,6 +73,7 @@
     </a>
   </div>
 </section>
+
 
 </body>
 </html>
