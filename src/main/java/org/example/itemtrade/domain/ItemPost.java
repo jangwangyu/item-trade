@@ -46,7 +46,6 @@ public class ItemPost implements SoftDelete { // 판매글
   private Category category; // ex. 카테고리
   private boolean isSold;
   private String imageUrl; // 이미지 URL
-  private String imagePath;
 
   @Enumerated(EnumType.STRING)
   private TradeStatus status = TradeStatus.TRADE;// 뷰 노출용
@@ -63,12 +62,13 @@ public class ItemPost implements SoftDelete { // 판매글
   @JoinColumn(name = "buyer_id")
   private Member buyer;
 
+  @Builder.Default
   @OneToMany(mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemImage> images = new ArrayList<>();
 
   public void addImage(ItemImage image) {
     images.add(image);
-    image.setItemPost(this);
+    image.setItemPost(this); // 양방향 연관관계 유지
   }
 
   @OneToMany(mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
