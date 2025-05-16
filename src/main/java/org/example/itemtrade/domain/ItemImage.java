@@ -22,18 +22,22 @@ public class ItemImage implements SoftDelete {
   @GeneratedValue
   private Long id;
 
-  private String imageUrl;
+  private String imagePath;
 
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "item_post_id")
   private ItemPost itemPost;
 
-  public static ItemImage of(String imageUrl, ItemPost itemPost) {
+  public static ItemImage of(String imagePath) {
     ItemImage image = new ItemImage();
-    image.imageUrl = imageUrl;
-    image.itemPost = itemPost;
+    image.imagePath = imagePath;
     return image;
+  }
+
+  public ItemImage(String imagePath, ItemPost itemPost) {
+    this.imagePath = imagePath;
+    this.itemPost = itemPost;
   }
 
   private boolean deleted = false;
