@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.domain.ItemImage;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.domain.MemberBlock;
@@ -68,6 +69,7 @@ public class PostService {
 
   // 특정 게시글 조회
   public ItemPostResponse getPostById(Long postId) {
+
     // 특정 게시글을 조회하여 반환
     return postRepository.findById(postId)
         .map(ItemPostResponse::from)
@@ -75,35 +77,52 @@ public class PostService {
   }
 
   // 게시글 작성
-  public ItemPostResponse createPost(ItemPostCreateRequest request, Member member, MultipartFile image)
+  public ItemPostResponse createPost(ItemPostCreateRequest request, Member member, List<MultipartFile> images)
       throws IOException {
+    // 객체 생성
+    ItemPost post = ItemPost.builder()
+        .title(request.getTitle())
+        .description(request.getDescription())
+        .price(request.getPrice())
+        .category(request.getCategory())
+        .seller(member)
+        .isSold(false)
+        .build();
+
+    // 2. 이미지 저장 및 연관관계 설정
     String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
-    // 1. 디렉토리 확인 및 생성
     File directory = new File(uploadDir);
     if (!directory.exists()) {
-      directory.mkdirs(); // 폴더 없으면 생성
+      directory.mkdirs();
     }
 
-    // 2. 파일 이름 생성
-    String originalFilename = image.getOriginalFilename();
-    String ext = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf("."));
-    String storedFilename = UUID.randomUUID() + ext;
+    for (MultipartFile image : images) {
+      if(!image.isEmpty()) {
+        // 2. 파일 이름 생성
+        String originalFilename = image.getOriginalFilename();
+        String ext = Objects.requireNonNull(originalFilename)
+            .substring(originalFilename.lastIndexOf("."));
+        String storedFilename = UUID.randomUUID() + ext;
 
-    // 3. 실제 저장 경로
-    File saveFile = new File(uploadDir + storedFilename);
-    image.transferTo(saveFile); // 여기서 오류났던 것
+        // 3. 실제 저장 경로
+        File saveFile = new File(uploadDir + storedFilename);
+        image.transferTo(saveFile);
 
-    // 4. DTO -> Entity
-    request.setImagePath("/uploads/post/" + storedFilename); // DB 저장용 URL
-    ItemPost post = request.of(member);
+        // 4. DTO -> Entity
+        String imagePath = "/uploads/post/" + storedFilename;
+        ItemImage itemImage = ItemImage.of(imagePath);
+        post.addImage(itemImage);// DB 저장용 URL
+      }
+    }
     post.setStatus(TradeStatus.TRADE);
     postRepository.save(post);
+
     // 5. Entity -> DTO
     return ItemPostResponse.from(post);
   }
 
   // 수정
-  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, MultipartFile image) throws IOException {
+  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, List<MultipartFile> images) throws IOException {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -112,19 +131,29 @@ public class PostService {
     }
 
     // 이미지 업로드 처리
-    if (image != null && !image.isEmpty()) {
-      String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
-      String originalFilename = image.getOriginalFilename();
-      String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
-      String storedFilename = UUID.randomUUID() + ext;
-      File file = new File(uploadDir + storedFilename);
-      image.transferTo(file);
-      post.setImagePath("/uploads/post/" + storedFilename);
+    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
+    File directory = new File(uploadDir);
+    if(!directory.exists()) {
+      directory.mkdirs();
     }
+    for (MultipartFile image : images) { // (image != null && !image.isEmpty()) {
+      if(image != null && !image.isEmpty()) {
+        String originalFilename = image.getOriginalFilename();
+        String ext = Objects.requireNonNull(originalFilename)
+            .substring(originalFilename.lastIndexOf("."));
+        String storedFilename = UUID.randomUUID() + ext;
+        File saveFile = new File(uploadDir + storedFilename);
+        image.transferTo(saveFile);
 
+        String imagePath = "/uploads/post/" + storedFilename;
+        ItemImage itemImage = ItemImage.of(imagePath);
+        post.addImage(itemImage); // DB 저장용 URL
+      }
+    }
     // 게시글 정보 업데이트
     post.update(request);
   }
+
   public ItemPostResponse getPostForEdit(Long postId) {
     return postRepository.findById(postId)
         .map(ItemPostResponse::from)
@@ -141,9 +170,10 @@ public class PostService {
     }
 
     // 이미지 파일 삭제
-    String imagePath = post.getImagePath();
-    if (imagePath != null) {
-      Path path = Paths.get("C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources" + imagePath);
+    for(ItemImage image : post.getImages()) {
+      String imagePath = image.getImagePath();
+      Path path = Paths.get(
+          "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources" + imagePath);
       try {
         Files.deleteIfExists(path);
       } catch (IOException e) {

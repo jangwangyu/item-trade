@@ -64,10 +64,10 @@ public class PostController {
   }
 
   @PostMapping
-  public String createPost(@ModelAttribute ItemPostCreateRequest request, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam("imageUrl") MultipartFile image)
+  public String createPost(@ModelAttribute ItemPostCreateRequest request, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam("images") List<MultipartFile> images)
       throws IOException {
 
-    postService.createPost(request, member, image);
+    postService.createPost(request, member, images);
 
     return "redirect:/";
   }
@@ -86,7 +86,7 @@ public class PostController {
   public String updatePost(@PathVariable Long id,
       @ModelAttribute ItemPostUpdateRequest request,
       @AuthenticationPrincipal(expression = "member") Member member,
-      @RequestParam(value = "imageUrl", required = false) MultipartFile image) throws IOException {
+      @RequestParam(value = "imageUrl", required = false) List<MultipartFile> image) throws IOException {
 
     postService.updatePost(id, request, member, image);
 
