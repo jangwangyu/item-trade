@@ -86,9 +86,10 @@ public class PostController {
   public String updatePost(@PathVariable Long id,
       @ModelAttribute ItemPostUpdateRequest request,
       @AuthenticationPrincipal(expression = "member") Member member,
-      @RequestParam(value = "imageUrl", required = false) List<MultipartFile> image) throws IOException {
+      @RequestParam(value = "images", required = false) List<MultipartFile> images,
+      @RequestParam(value = "deletedItemImageIds", required = false) List<Long> deletedItemImageIds) throws IOException {
 
-    postService.updatePost(id, request, member, image);
+    postService.updatePost(id, request, member, images, deletedItemImageIds);
 
     return "redirect:/posts/" + id;
   }

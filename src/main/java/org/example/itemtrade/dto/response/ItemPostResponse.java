@@ -2,8 +2,8 @@ package org.example.itemtrade.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.example.itemtrade.domain.ItemImage;
 import org.example.itemtrade.domain.ItemPost;
+import org.example.itemtrade.dto.ImageDto;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.enums.TradeStatus;
 
@@ -17,9 +17,12 @@ public record ItemPostResponse(
     LocalDateTime createdAt,
     String sellerNickname,
     Long sellerId,
-    List<String> imagePaths,
-    TradeStatus tradeStatus) {
+    List<ImageDto> imagePaths,
+    TradeStatus tradeStatus){
   public static ItemPostResponse from(ItemPost post) {
+    List<ImageDto> imagePaths = post.getImages().stream()
+        .map(itemImage -> new ImageDto(itemImage.getId(), itemImage.getImagePath()))
+        .toList();
     return new ItemPostResponse(
         post.getId(),
         post.getTitle(),
@@ -30,7 +33,7 @@ public record ItemPostResponse(
         post.getCreatedAt(),
         post.getSeller().getNickName(),
         post.getSeller().getId(),
-        post.getImages().stream().map(ItemImage::getImagePath).toList(),
+        imagePaths,
         post.getStatus()
     );
   }

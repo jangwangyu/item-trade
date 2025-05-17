@@ -122,7 +122,7 @@ public class PostService {
   }
 
   // 수정
-  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, List<MultipartFile> images) throws IOException {
+  public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, List<MultipartFile> images, List<Long> deletedItemImageIds) throws IOException {
     ItemPost post = postRepository.findById(postId)
         .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -130,28 +130,52 @@ public class PostService {
       throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
     }
 
-    // 이미지 업로드 처리
-    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
-    File directory = new File(uploadDir);
-    if(!directory.exists()) {
-      directory.mkdirs();
+    // 삭제 요청된 이미지 처리
+    if (deletedItemImageIds != null) {
+      post.getImages().removeIf(image -> {
+        if (deletedItemImageIds.contains(image.getId())) {
+          deletePhysicalImage(image.getImagePath());
+          return true; // 삭제할 이미지
+        }
+        return false; // 유지할 이미지
+      });
     }
-    for (MultipartFile image : images) { // (image != null && !image.isEmpty()) {
-      if(image != null && !image.isEmpty()) {
-        String originalFilename = image.getOriginalFilename();
-        String ext = Objects.requireNonNull(originalFilename)
-            .substring(originalFilename.lastIndexOf("."));
-        String storedFilename = UUID.randomUUID() + ext;
-        File saveFile = new File(uploadDir + storedFilename);
-        image.transferTo(saveFile);
 
-        String imagePath = "/uploads/post/" + storedFilename;
-        ItemImage itemImage = ItemImage.of(imagePath);
-        post.addImage(itemImage); // DB 저장용 URL
+    // 새 이미지 추가
+    if (images != null) {
+      for (MultipartFile image : images) {
+        if (!image.isEmpty()) {
+          String imagePath = saveImage(image);
+          ItemImage itemImage = ItemImage.of(imagePath);
+          post.addImage(itemImage);
+        }
       }
     }
     // 게시글 정보 업데이트
     post.update(request);
+  }
+
+  public String saveImage(MultipartFile image) throws IOException {
+    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
+    File directory = new File(uploadDir);
+    if (!directory.exists()) {
+      directory.mkdirs(); // 없으면 생성
+    }
+    String ext = Objects.requireNonNull(image.getOriginalFilename())
+        .substring(image.getOriginalFilename().lastIndexOf("."));
+    String storedFilename = UUID.randomUUID() + ext;
+    File saveFile = new File(uploadDir + storedFilename);
+    image.transferTo(saveFile);
+    return "/uploads/post/" + storedFilename; // DB에 저장할 경로
+  }
+
+  public void deletePhysicalImage(String imagePath) {
+    try {
+      Path path = Paths.get("C:/.../resources" + imagePath);
+      Files.deleteIfExists(path);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public ItemPostResponse getPostForEdit(Long postId) {

@@ -41,10 +41,19 @@
       <textarea class="form-control" id="description" th:field="*{description}" rows="4" required></textarea>
     </div>
 
-    <div class="mb-3">
-      <label for="imageUrl" class="form-label">이미지 업로드</label>
-      <input type="file" class="form-control" id="imageUrl" name="imageUrl" required>
+    <!-- 기존 이미지 목록 표시 -->
+    <div th:each="image : ${post.imagePaths()}">
+      <img th:src="@{${image.imagePath}}" width="150">
+      <label>
+        <input type="checkbox" name="deletedItemImageIds" th:value="${image.id}">
+        삭제
+      </label>
     </div>
+
+    <!-- 새 이미지 추가 -->
+    <label for="images">새 이미지 추가</label>
+    <input type="file" name="images" id="images" multiple>
+
 
     <button type="submit" class="btn btn-primary">수정하기</button>
   </form>
