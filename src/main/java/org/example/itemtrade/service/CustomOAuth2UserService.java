@@ -3,7 +3,7 @@ package org.example.itemtrade.service;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
+import org.example.itemtrade.dto.User.CustomOAuth2User;
 import org.example.itemtrade.repository.MemberRepository;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
