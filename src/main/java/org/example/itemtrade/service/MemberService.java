@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.MemberProfileDto;
-import org.example.itemtrade.dto.Oauth2.UserType;
+import org.example.itemtrade.dto.User.UserType;
 import org.example.itemtrade.dto.request.MemberUpdateRequest;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;

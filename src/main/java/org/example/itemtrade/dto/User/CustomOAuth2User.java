@@ -1,4 +1,4 @@
-package org.example.itemtrade.dto.Oauth2;
+package org.example.itemtrade.dto.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +24,7 @@ public class CustomOAuth2User implements OAuth2User, UserType { // Member 객체
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(() -> this.member.getRole());
+    return List.of(this.member::getRole);
   }
 
   @Override

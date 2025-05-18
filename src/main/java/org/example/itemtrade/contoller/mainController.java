@@ -3,7 +3,7 @@ package org.example.itemtrade.contoller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
+import org.example.itemtrade.dto.User.CustomOAuth2User;
 import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.service.PostService;

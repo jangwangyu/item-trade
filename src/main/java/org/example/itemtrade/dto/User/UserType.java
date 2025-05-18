@@ -1,4 +1,4 @@
-package org.example.itemtrade.dto.Oauth2;
+package org.example.itemtrade.dto.User;
 
 import org.example.itemtrade.domain.Member;
 
