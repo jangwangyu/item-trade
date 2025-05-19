@@ -33,12 +33,14 @@
   <div class="card p-4 shadow register-card">
     <h3 class="text-center mb-4">회원가입</h3>
 
-    <!-- 에러 메시지 출력 -->
-    <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
-      모든 필드를 올바르게 입력해 주세요.
-    </div>
+
 
     <form th:action="@{/register}" method="post" th:object="${registerRequest}">
+      <!-- 에러 메시지 출력 -->
+      <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+        모든 필드를 올바르게 입력해 주세요.
+      </div>
+
       <div class="mb-3">
         <label for="email" class="form-label">이메일</label>
         <input type="email" th:field="*{email}" class="form-control" id="email" required>
@@ -47,8 +49,8 @@
 
       <div class="mb-3">
         <label for="nickname" class="form-label">닉네임</label>
-        <input type="text" th:field="*{nickName}" class="form-control" id="nickname" required>
-        <div class="text-danger" th:errors="*{nickName}">닉네임 오류</div>
+        <input type="text" th:field="*{nickname}" class="form-control" id="nickname" required>
+        <div class="text-danger" th:errors="*{nickname}">닉네임 오류</div>
       </div>
 
       <div class="mb-3">
