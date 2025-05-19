@@ -1,5 +1,6 @@
 package org.example.itemtrade.repository;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
 import org.example.itemtrade.domain.Member;
@@ -15,4 +16,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   Optional<Member> findByProviderAndProviderIdAndDeletedFalse(String provider, String providerId);
 
   List<Member> findByDeletedFalse();
+
+  boolean existsByEmail(String email);
+
+  boolean existsByNickName(@NotBlank(message = "닉네임은 필수입니다.") String nickname);
 }
