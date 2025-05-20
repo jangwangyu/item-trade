@@ -29,7 +29,7 @@ public class SecurityConfig {
         .formLogin(form -> form
             .loginPage("/login")
             .defaultSuccessUrl("/") // 로그인 성공 후 이동할 URL
-            .failureUrl("/login?error=true") // 로그인 실패 시 이동할 URL
+            .failureUrl("/login-form?error") // 로그인 실패 시 이동할 URL
             .permitAll()
         )
         .userDetailsService(customUserDetailsService)
@@ -39,7 +39,8 @@ public class SecurityConfig {
             )
         )
         .logout(logout -> logout
-            .logoutSuccessUrl("/") // ✅ 로그아웃 후 이동할 URL
+            .logoutUrl("/logout") // 로그아웃 URL
+            .logoutSuccessUrl("/login-form?logout") // ✅ 로그아웃 후 이동할 URL
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID")
         );
