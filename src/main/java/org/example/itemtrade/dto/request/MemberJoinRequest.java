@@ -3,12 +3,14 @@ package org.example.itemtrade.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.enums.Role;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class MemberJoinRequest {
 
   @NotBlank(message = "이메일은 필수입니다.")
