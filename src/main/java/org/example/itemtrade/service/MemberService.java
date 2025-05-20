@@ -7,6 +7,7 @@ import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.MemberProfileDto;
 import org.example.itemtrade.dto.User.UserType;
 import org.example.itemtrade.dto.request.MemberJoinRequest;
+import org.example.itemtrade.dto.request.MemberLoginRequest;
 import org.example.itemtrade.dto.request.MemberUpdateRequest;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
@@ -47,6 +48,16 @@ public class MemberService {
     Member memberJoin = request.toEntity(encodedPassword);
 
     memberRepository.save(memberJoin);
+  }
+
+  // form 로그인
+  public void login(MemberLoginRequest request){
+    Member member = memberRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+    if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
   }
 
   // 회원 수정
