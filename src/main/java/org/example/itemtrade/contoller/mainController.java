@@ -7,6 +7,9 @@ import org.example.itemtrade.dto.User.CustomOAuth2User;
 import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +23,12 @@ public class mainController {
   private final PostService postService;
 
   @GetMapping("/")
-  public String index(@AuthenticationPrincipal CustomOAuth2User user , Model model, @RequestParam(required = false) Integer maxPrice, @RequestParam(required = false) Integer minPrice, @RequestParam(required = false) String category) {
+  public String index(@AuthenticationPrincipal CustomOAuth2User user , Model model, @RequestParam(required = false) Integer maxPrice, @RequestParam(required = false) Integer minPrice, @RequestParam(required = false) String category,@PageableDefault(size = 5) Pageable pageable) {
 
     Member currentUser = (user != null) ? user.getMember() : null;
 
     // 게시글 목록을 가져오는 서비스 메서드 호출
-    List<ItemPostResponse> posts = postService.getAllPosts(category, minPrice, maxPrice, currentUser);
+    Page<ItemPostResponse> posts = postService.getAllPosts(category, minPrice, maxPrice, currentUser, pageable);
     model.addAttribute("posts",posts);
     model.addAttribute("categories", Category.values());
     return "index";
