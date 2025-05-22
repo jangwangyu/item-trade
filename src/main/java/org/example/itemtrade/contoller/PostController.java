@@ -11,6 +11,8 @@ import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.service.CommentService;
 import org.example.itemtrade.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,14 +37,14 @@ public class PostController {
 
   // 게시글 조회
   @GetMapping("/{id}")
-  public String showDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String showDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal(expression = "member") Member member, Pageable pageable) {
 
     var post = postService.getPostById(id);
 
     boolean isAuthor = member != null && post.sellerId().equals(member.getId());
 
     // 댓글 리스트
-    List<CommentDto> comments = commentService.commentList(id);
+    Page<CommentDto> comments = commentService.commentList(id,pageable);
 
     model.addAttribute("post", post);
     model.addAttribute("isAuthor", isAuthor);

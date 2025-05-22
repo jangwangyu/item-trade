@@ -6,6 +6,8 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,9 +19,12 @@ import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.request.ItemPostCreateRequest;
 import org.example.itemtrade.dto.request.ItemPostUpdateRequest;
 import org.example.itemtrade.dto.response.ItemPostResponse;
+import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,41 +40,18 @@ public class PostService {
   private final MemberBlockRepository memberBlockRepository;
 
   // 전체조회
-  public List<ItemPostResponse> getAllPosts(String category, Integer minPrice, Integer maxPrice, Member currentUser) {
+  public Page<ItemPostResponse> getAllPosts(String categoryName, Integer minPrice, Integer maxPrice, Member currentUser,
+      Pageable pageable) {
 
-    List<ItemPost> posts;
+    List<Member> blocked = (currentUser != null) ? memberBlockRepository.findAllByBlocker(currentUser).stream().map(MemberBlock::getBlocked).toList() : Collections.emptyList();
 
-    if(currentUser != null){ // 로그인
-      List<Member> blockedMembers = memberBlockRepository.findAllByBlocker(currentUser).stream().map(
-          MemberBlock::getBlocked).toList();
+    Category category = (categoryName != null) ? Category.valueOf(categoryName) : null;
 
-      List<MemberBlock> allBlocks = memberBlockRepository.findAllByBlocker(currentUser);
-      System.out.println("차단 목록: " + allBlocks);
-
-      // 차단된 회원의 게시글을 제외한 나머지 게시글을 필터링
-      posts =  postRepository.findAll().stream()
-          .filter(post -> !blockedMembers.contains(post.getSeller())) // 차단된 회원의 게시글 제외
-          .filter(post -> post.getCategory() != null) // 카테고리가 null이 아닌 게시글만 필터링
-          .filter(post -> category == null || post.getCategory().name().equals(category))
-          .filter(post -> minPrice == null || post.getPrice() >= minPrice)
-          .filter(post -> maxPrice == null || post.getPrice() <= maxPrice)
-          .toList();
-    } else { // 비회원
-      // 차단된 회원의 게시글을 제외한 나머지 게시글을 필터링
-      posts =  postRepository.findAll().stream()
-          .filter(post -> post.getCategory() != null) // 카테고리가 null이 아닌 게시글만 필터링
-          .filter(post -> category == null || post.getCategory().name().equals(category))
-          .filter(post -> minPrice == null || post.getPrice() >= minPrice)
-          .filter(post -> maxPrice == null || post.getPrice() <= maxPrice)
-          .toList();
-    }
-
-    return posts.stream().map(ItemPostResponse::from).toList();
+    return postRepository.findAllPosts(category, minPrice, maxPrice, blocked, pageable).map(ItemPostResponse::from);
   }
 
   // 특정 게시글 조회
   public ItemPostResponse getPostById(Long postId) {
-
     // 특정 게시글을 조회하여 반환
     return postRepository.findById(postId)
         .map(ItemPostResponse::from)
