@@ -10,6 +10,8 @@ import org.example.itemtrade.dto.request.CommentCreateRequest;
 import org.example.itemtrade.repository.CommentRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,15 @@ public class CommentService {
   /**
    * 댓글 조회
    *
-   * @param commentId 댓글 ID
    * @return 댓글 정보
    */
 
-  public List<CommentDto> commentList(Long postId) {
+  public Page<CommentDto> commentList(Long postId, Pageable pageable) {
     ItemPost itemPost = itemPostRepository.findById(postId).orElseThrow(() ->
         new IllegalArgumentException("게시물이 존재하지 않습니다."));
-    List<Comment> comments = commentRepository.findAllByItemPostOrderByCreatedAtDesc(itemPost);
-    return comments.stream().map(CommentDto::from).toList();
+    Page<Comment> comments = commentRepository.findAllByItemPostOrderByCreatedAtDesc(itemPost, pageable);
+
+    return comments.map(CommentDto::from);
   }
 
   /**
@@ -50,7 +52,7 @@ public class CommentService {
         new IllegalArgumentException("게시물이 존재하지 않습니다."));
     Member writer = memberRepository.findById(member.getId()).orElseThrow(() ->
         new IllegalArgumentException("작성자가 존재하지 않습니다."));
-    Comment comment = Comment.of(writer, itemPost, request.getContent());
+    Comment comment = Comment.of(writer, itemPost, request.content());
     commentRepository.save(comment);
     return CommentDto.from(comment);
   }
@@ -61,7 +63,7 @@ public class CommentService {
    * @param commentId 댓글 ID
    * @param member    삭제 요청자
    */
-  public Long deleteComment(Long commentId, Member member) {
+  public void deleteComment(Long commentId, Member member) {
     Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
         new IllegalArgumentException("댓글이 존재하지 않습니다."));
     if(!comment.getWriter().getId().equals(member.getId())) {
@@ -72,6 +74,5 @@ public class CommentService {
     Long postId = itemPost.getId();
     commentRepository.delete(comment);
 
-    return postId;
   }
 }
