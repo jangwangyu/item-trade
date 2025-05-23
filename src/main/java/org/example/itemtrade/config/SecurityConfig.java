@@ -23,17 +23,22 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/login", "/oauth2/**", "/ws/**").permitAll()
-            .anyRequest().permitAll()
+            .requestMatchers("/", "/login", "/login-form", "/oauth2/**", "/ws/**","/images/**","/chat.js" ).permitAll()
+            .anyRequest().authenticated()
         )
+        .exceptionHandling(exception -> exception
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.sendRedirect("/login-form?needAuth=true");
+            }))
         .formLogin(form -> form
-            .loginPage("/login")
-            .defaultSuccessUrl("/") // 로그인 성공 후 이동할 URL
+            .loginPage("/login-form")
+            .defaultSuccessUrl("/", true) // 로그인 성공 후 이동할 URL
             .failureUrl("/login-form?error") // 로그인 실패 시 이동할 URL
             .permitAll()
         )
         .userDetailsService(customUserDetailsService)
         .oauth2Login(oauth -> oauth
+            .defaultSuccessUrl("/", true)
             .userInfoEndpoint(userInfo -> userInfo
                 .userService(customOAuth2UserService) // 여기서 CustomOAuth2User 생성
             )
