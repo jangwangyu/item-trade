@@ -71,6 +71,13 @@
 
   </div>
 </section>
-
 </body>
+<script th:inline="javascript">
+  const params = new URLSearchParams(window.location.search);
+  const needAuth = params.get("needAuth");
+
+  if (needAuth === "true") {
+    alert("로그인이 필요한 서비스입니다.");
+  }
+</script>
 </html>
