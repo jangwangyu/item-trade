@@ -23,7 +23,7 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/login", "/login-form", "/oauth2/**", "/ws/**","/images/**","/chat.js" ).permitAll()
+            .requestMatchers("/", "/login/**", "/login-form", "/oauth2/**", "/ws/**","/images/**","/chat.js", "/register/**","/api/register" ).permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling(exception -> exception
@@ -31,7 +31,7 @@ public class SecurityConfig {
                 response.sendRedirect("/login-form?needAuth=true");
             }))
         .formLogin(form -> form
-            .loginPage("/login-form")
+            .loginPage("/login")
             .defaultSuccessUrl("/", true) // 로그인 성공 후 이동할 URL
             .failureUrl("/login-form?error") // 로그인 실패 시 이동할 URL
             .permitAll()
