@@ -112,12 +112,11 @@ function appendMessage(msg) {
           </span>
         </div>
       </div>
-      <img src="/images/user2.png" class="profile-img" alt="나">
     `;
   } else {
     wrapper.innerHTML = `
       <a href="/opponent/${msg.senderId}">
-        <img src="/images/user1.png" class="profile-img" alt="상대방">
+        <img src="${msg.senderProfileImageUrl}" class="profile-img" alt="상대방">
       </a>
       <div>
         <a href="/opponent/${msg.senderId}" class="text-decoration-none text-dark">
