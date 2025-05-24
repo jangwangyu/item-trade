@@ -1,13 +1,13 @@
 package org.example.itemtrade.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.MemberProfileDto;
 import org.example.itemtrade.dto.User.UserType;
 import org.example.itemtrade.dto.request.MemberJoinRequest;
-import org.example.itemtrade.dto.request.MemberLoginRequest;
 import org.example.itemtrade.dto.request.MemberUpdateRequest;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
@@ -46,6 +46,11 @@ public class MemberService {
     }
     String encodedPassword = passwordEncoder.encode(request.getPassword());
     Member memberJoin = request.toEntity(encodedPassword);
+
+    String seed = UUID.randomUUID().toString();
+    String profileImageUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=" + seed + ".svg";
+
+    memberJoin.setProfileImageUrl(profileImageUrl);
 
     memberRepository.save(memberJoin);
   }

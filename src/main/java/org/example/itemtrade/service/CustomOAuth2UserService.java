@@ -1,6 +1,7 @@
 package org.example.itemtrade.service;
 
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.User.CustomOAuth2User;
@@ -44,7 +45,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     Member member = memberRepository
         .findByProviderAndProviderId(provider, providerId)  // ✅ 이걸로 식별해야
         .orElseGet(() -> {
+          String seed = UUID.randomUUID().toString();
+          String profileImageUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=" + seed + ".svg";
           Member newMember = MemberOauth2.create(userRequest, oAuth2User);
+          newMember.setProfileImageUrl(profileImageUrl);
           return memberRepository.save(newMember);
         });
     if (member.isDeleted()) {
