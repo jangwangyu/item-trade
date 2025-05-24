@@ -118,6 +118,7 @@ public class ChatroomService {
     if(chatRoom.isTradeSellerComplete() && chatRoom.isTradeBuyerComplete()) {
       chatRoom.setTradeStatus(TradeStatus.COMPLETE);
       chatRoom.getItemPost().setStatus(TradeStatus.COMPLETE);
+      chatRoom.getItemPost().setSold(true);
     }
   }
 
