@@ -2,8 +2,13 @@ package org.example.itemtrade.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
@@ -11,15 +16,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.example.itemtrade.domain.Member;
-import org.example.itemtrade.dto.Oauth2.CustomOAuth2User;
+import org.example.itemtrade.domain.MemberBlock;
+import org.example.itemtrade.dto.MemberDto;
+import org.example.itemtrade.dto.MemberProfileDto;
+import org.example.itemtrade.dto.User.CustomOAuth2User;
+import org.example.itemtrade.dto.User.UserType;
+import org.example.itemtrade.dto.request.MemberJoinRequest;
+import org.example.itemtrade.dto.request.MemberUpdateRequest;
+import org.example.itemtrade.enums.TradeStatus;
+import org.example.itemtrade.repository.ItemPostRepository;
+import org.example.itemtrade.repository.MemberBlockRepository;
 import org.example.itemtrade.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -34,54 +50,210 @@ public class MemberServiceTest {
   @Mock
   private MemberRepository memberRepository;
 
+  @Mock
+  private ItemPostRepository itemPostRepository;
+
+  @Mock
+  private MemberBlockRepository memberBlockRepository;
+
+  @Mock
+  private PasswordEncoder passwordEncoder;
+
   @InjectMocks
   private MemberService memberService;
 
   @Test
-  void 유저를_비활성화한다() {
-    Member member = new Member();
-    member.setEmail("test@example.com");
-
-    when(memberRepository.findByEmail("test@example.com")).thenReturn(Optional.of(member));
-
-    memberService.deleteMember("test@example.com");
-
-    assertThat(member.isDeleted()).isTrue();
+  void 회원가입_정상(){
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "password", "password", "테스트");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(false);
+    when(memberRepository.existsByNickName("테스트")).thenReturn(false);
+    when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
+    when(memberRepository.save(any(Member.class))).thenReturn(
+        Member.builder().id(1L).email("test@test.com").nickName("테스트")
+            .profileImageUrl("https://api.dicebear.com/7.x/adventurer/svg?seed=12345.svg").build());
+    // When
+    memberService.join(request);
+    // Then
+    verify(memberRepository, times(1)).save(any(Member.class));
   }
 
   @Test
-  void 유저를_비활성화를_해제한다() {
-    Member member = new Member();
-    member.setEmail("test@example.com");
-    member.delete(); // deleted = true
+  void 회원가입_이미_존재하는_이메일() {
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "password", "password",
+        "테스트");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(true);
 
-    when(memberRepository.findByEmail("test@example.com")).thenReturn(Optional.of(member));
-
-    memberService.restoreMember("test@example.com");
-
-    assertThat(member.isDeleted()).isFalse();
-  }
-
-  @Test
-  void 비활성화된유저를다시활성화_예외() {
-    Member member = new Member();
-    member.setEmail("test@example.com"); // deleted = false
-
-    when(memberRepository.findByEmail("test@example.com")).thenReturn(Optional.of(member));
-
-    assertThatThrownBy(() -> memberService.restoreMember("test@example.com"))
+    // When & Then
+    assertThatThrownBy(() -> memberService.join(request))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("이미 활성화");
+        .hasMessageContaining("이미 가입된 이메일입니다.");
+  }
+  @Test
+  void 회원가입_비밀번호_불일치(){
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "password", "asd",
+        "테스트");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(false);
+    // When & Then
+    assertThatThrownBy(() -> memberService.join(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("비밀번호가 일치하지 않습니다.");
+  }
+  @Test
+  void 회원가입_이미_존재하는_닉네임(){
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "password", "password",
+        "테스트");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(false);
+    when(memberRepository.existsByNickName("테스트")).thenReturn(true);
+    //When & Then
+    assertThatThrownBy(() -> memberService.join(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("이미 가입된 닉네임입니다.");
   }
 
   @Test
-  void 없는회원을비활성화하려고하는_예외() {
-    when(memberRepository.findByEmail("none@example.com")).thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> memberService.deleteMember("none@example.com"))
+  void 회원가입_닉네임_길이_제한() {
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "password", "password",
+        "테");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(false);
+    when(memberRepository.existsByNickName("테")).thenReturn(false);
+    // When & Then
+    assertThatThrownBy(() -> memberService.join(request))
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("회원이 아닙니다");
+        .hasMessageContaining("닉네임은 2자 이상 10자 이하로 입력해주세요.");
   }
+
+  @Test
+  void 회원가입_비밀번호_길이_제한() {
+    // Given
+    MemberJoinRequest request = new MemberJoinRequest("test@test.com", "asd", "asd",
+        "테스트");
+    when(memberRepository.existsByEmail("test@test.com")).thenReturn(false);
+    when(memberRepository.existsByNickName("테스트")).thenReturn(false);
+    // When & Then
+    assertThatThrownBy(() -> memberService.join(request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("비밀번호는 8자 이상 20자 이하로 입력해주세요.");
+  }
+
+  @Test
+  void 회원정보_수정() {
+    // Given
+    Member member = Member.builder()
+        .email("test@test.com")
+        .nickName("테스트")
+        .profileImageUrl("https://api.dicebear.com/7.x/adventurer/svg?seed=12345.svg")
+        .introduction("안녕하세요")
+        .build();
+    MemberUpdateRequest request = new MemberUpdateRequest( "123","https://api.dicebear.com/7.x/adventurer/svg?seed=1234567.svg", "반갑습니다.");
+    UserType userType = mock(UserType.class);
+
+    when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
+    when(userType.getLoginType()).thenReturn("FORM");
+
+    // When
+    memberService.updateMember(member, request, userType);
+    // Then
+    verify(memberRepository, times(1)).save(any(Member.class));
+    assertThat(member.getNickName()).isEqualTo("123");
+    assertThat(member.getIntroduction()).isEqualTo("반갑습니다.");
+  }
+
+  @Test
+  void 상대방_프로필_조회() {
+    // Given
+    Member member = Member.builder()
+        .id(1L)
+        .email("test@test.com")
+        .nickName("테스트")
+        .profileImageUrl("https://api.dicebear.com/7.x/adventurer/svg?seed=12345.svg")
+        .introduction("안녕하세요")
+        .build();
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+    when(itemPostRepository.countBySellerAndStatus(member, TradeStatus.COMPLETE)).thenReturn(3);
+    when(itemPostRepository.countByBuyerAndStatus(member, TradeStatus.COMPLETE)).thenReturn(1);
+    // When
+    MemberProfileDto result = memberService.getMemberProfile(member.getId());
+    // Then
+    assertThat(result.nickName()).isEqualTo("테스트");
+    assertThat(result.totalTrades()).isEqualTo(4);
+    verify(memberRepository, times(1)).findById(1L);
+  }
+
+
+
+  @Test
+  void 유저를_차단한다() {
+    // given
+    Member blocker = Member.builder().id(1L).email("test@test.com").build();
+    Member blocked = Member.builder().id(2L).email("test2@test.com").build();
+
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(blocker));
+    when(memberRepository.findById(2L)).thenReturn(Optional.of(blocked));
+    when(memberBlockRepository.existsByBlockerAndBlocked(blocker, blocked)).thenReturn(false);
+
+    // when
+    memberService.blockMember(blocker, blocked);
+
+    // then
+    verify(memberBlockRepository, times(1)).save(any(MemberBlock.class));
+
+  }
+
+  @Test
+  void 이미_차단한_유저는_예외를_던진다() {
+    // given
+    Member blocker = Member.builder().id(1L).email("test@test.com").build();
+    Member blocked = Member.builder().id(2L).email("test2@test.com").build();
+
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(blocker));
+    when(memberRepository.findById(2L)).thenReturn(Optional.of(blocked));
+    when(memberBlockRepository.existsByBlockerAndBlocked(blocker, blocked)).thenReturn(true);
+
+
+    // when & then
+    assertThatThrownBy(() -> memberService.blockMember(blocker, blocked))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("이미 차단된 회원입니다.");
+
+  }
+
+  @Test
+  void 유저를_차단_해제한다() {
+    // Given
+    Member blocker = Member.builder().id(1L).email("test.com").build();
+    Member blocked = Member.builder().id(2L).email("test.com").build();
+    MemberBlock block = MemberBlock.of(blocker,blocked);
+
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(blocker));
+    when(memberRepository.findById(2L)).thenReturn(Optional.of(blocked));
+    when(memberBlockRepository.findByBlockerAndBlocked(blocker, blocked)).thenReturn(Optional.of(block));
+    // When
+    memberService.unBlockMember(blocker, blocked);
+    // Then
+    verify(memberBlockRepository).delete(block);
+  }
+
+  @Test
+  void 차단된_유저를_차단_해제할때_예외() {
+    // Given
+    Member blocker = Member.builder().id(1L).email("test.com").build();
+    Member blocked = Member.builder().id(2L).email("test.com").build();
+
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(blocker));
+    when(memberRepository.findById(2L)).thenReturn(Optional.of(blocked));
+    when(memberBlockRepository.findByBlockerAndBlocked(blocker, blocked)).thenReturn(Optional.empty());
+
+    // When & Then
+    assertThatThrownBy(() -> memberService.unBlockMember(blocker, blocked))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("차단된 회원이 아닙니다.");
+  }
+
 
   @Test
   void 카카오_로그인_정상작동() {
