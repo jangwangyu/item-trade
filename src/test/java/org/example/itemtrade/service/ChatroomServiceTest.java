@@ -18,9 +18,11 @@ import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatRoomDto;
 import org.example.itemtrade.enums.Category;
+import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ChatMessageRepository;
 import org.example.itemtrade.repository.ChatRoomRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
+import org.example.itemtrade.repository.MemberBlockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @DisplayName("비즈니스 로직 - 채팅방")
 @ExtendWith(MockitoExtension.class)
@@ -41,10 +42,16 @@ class ChatroomServiceTest {
   private ItemPostRepository itemPostRepository;
 
   @Mock
+  private MemberBlockRepository memberBlockRepository;
+
+  @Mock
   private ChatMessageRepository chatMessageRepository;
 
   @InjectMocks
   private ChatroomService chatroomService;
+
+  @Mock
+  private MemberService memberService;
 
   @Test
   void 채팅방생성_기존에없을경우() {
@@ -98,67 +105,88 @@ class ChatroomServiceTest {
     assertEquals(existingRoom, result); // 반환된 채팅방이  존재하는 chatRoom과 같은지 확인
   }
 
+  @DisplayName("로그인하지 않으면 예외가 발생한다")
   @Test
-  void 채팅방_목록() {
-    // given
-    ItemPost post = mock(ItemPost.class);
-    Member member = new Member("test@test.com", "완구");
-    ChatRoom chatRoom1 = ChatRoom.of(
-        member,
-        member,
-        post
-    );
-
-    ChatRoom chatRoom2 = ChatRoom.of(
-        member,
-        member,
-        post
-    );
-
-    when(chatRoomRepository.findAllByBuyer(member)).thenReturn(List.of(chatRoom1));
-    when(chatRoomRepository.findAllBySeller(member)).thenReturn(List.of(chatRoom2));
-
-    when(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom1, member))
-        .thenReturn(2L);
-    when(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom2, member))
-        .thenReturn(5L);
-
-    // when
-    List<ChatRoomDto> result = chatroomService.getChatRoomsForMember(member);
-    // then
-    assertThat(result).hasSize(2);
-    assertThat(result).extracting("unreadCount").containsExactly(2L, 5L);
-
-    verify(chatRoomRepository).findAllBySeller(member);
-    verify(chatRoomRepository).findAllByBuyer(member);
-
+  void 로그인하지_않으면_예외가_발생한다() {
+    // Given
+    Member member = null; // 로그인하지 않은 상태
+    // When & Then
+    assertThatThrownBy(() -> chatroomService.getChatRoomsForMember(member))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("로그인한 사용자만 채팅 목록을 조회할 수 있습니다.");
   }
 
+  @DisplayName("내가 차단한 유저는 채팅방 목록에서 제외된다")
   @Test
-  void 채팅방_중복제거확인() {
+  void 내가_차단한_유저는_채팅방_목록에서_제외된다() {
     // Given
-    Member member = new Member("test@test.com", "완구");
+    Member me = new Member("test@test.com", "나");
+    me.setId(1L);
+    Member blocked = new Member("test@test.com", "상대");
+    blocked.setId(2L);
     ItemPost post = mock(ItemPost.class);
-
     ChatRoom chatRoom = ChatRoom.of(
-        member,
-        mock(Member.class),
+        me,
+        blocked,
         post
     );
-
-    // 구매자 채팅방과 판매자 채팅방이 동일한 경우
-    when(chatRoomRepository.findAllByBuyer(member)).thenReturn(List.of(chatRoom));
-    when(chatRoomRepository.findAllBySeller(member)).thenReturn(List.of(chatRoom));
-
-    when(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member))
-        .thenReturn(0L);
+    when(chatRoomRepository.findAllByMemberOrderByLastMessage(me)).thenReturn(List.of(chatRoom));
+    when(memberService.isMemberBlocked(me, blocked)).thenReturn(true);
     // When
-    List<ChatRoomDto> result = chatroomService.getChatRoomsForMember(member);
+    List<ChatRoomDto> result = chatroomService.getChatRoomsForMember(me);
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @DisplayName("상대가 나를 차단한 채팅방은 제외된다")
+  @Test
+  void 상대가_나를_차단한_채팅방은_제외된다() {
+    // Given
+    Member me = new Member("test@test.com", "나");
+    me.setId(1L);
+    Member blocker = new Member("test@test.com", "상대");
+    blocker.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        blocker,
+        me,
+        post
+    );
+    when(chatRoomRepository.findAllByMemberOrderByLastMessage(me)).thenReturn(List.of(chatRoom));
+    when(memberService.isMemberBlocked(blocker, me)).thenReturn(true);
+    when(memberService.isMemberBlocked(me, blocker)).thenReturn(false);
+    // When
+    List<ChatRoomDto> result = chatroomService.getChatRoomsForMember(me);
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @DisplayName("정상적인 채팅방은 반환된다(차단한 유저가 없음)")
+  @Test
+  void 정상적인_채팅방은_반환된다() {
+    // Given
+    Member me = new Member("test@test.com", "나");
+    me.setId(1L);
+    Member opponent = new Member("test@test.com", "상대");
+    opponent.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        me,
+        opponent,
+        post
+    );
+    when(chatRoomRepository.findAllByMemberOrderByLastMessage(me)).thenReturn(List.of(chatRoom));
+    when(memberService.isMemberBlocked(me, opponent)).thenReturn(false);
+    when(memberService.isMemberBlocked(opponent, me)).thenReturn(false);
+    when(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, me))
+        .thenReturn(0L); // 읽지 않은 메시지가 없다고 가정
+    when(chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId()))
+        .thenReturn(Optional.empty()); // 마지막 메시지가 없다고 가정
+    // When
+    List<ChatRoomDto> result = chatroomService.getChatRoomsForMember(me);
     // Then
     assertThat(result).hasSize(1);
-
-    verify(chatRoomRepository).findAllBySeller(member);
-    verify(chatRoomRepository).findAllByBuyer(member);
+    assertThat(result.get(0).unreadCount()).isEqualTo(0L);
   }
 
   @Test
@@ -178,6 +206,7 @@ class ChatroomServiceTest {
         member,
         post
     );
+    chatRoom.setId(chatRoomId);
     given(chatRoomRepository.findById(chatRoomId)).willReturn(Optional.of(chatRoom));
     given(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member)).willReturn(2L);
     // When
@@ -208,13 +237,12 @@ class ChatroomServiceTest {
   @Test
   void 채팅방_삭제_성공() {
     // Given
-    Long chatRoomId = 1L;
     Member member = new Member("test@test", "완구");
+    member.setId(1L);
     ChatRoom chatRoom = mock(ChatRoom.class);
+    Long chatRoomId = 1L;
+    chatRoom.setId(chatRoomId);
 
-    ReflectionTestUtils.setField(member, "id", 1L); // memberId를 1L로 세팅
-
-    when(chatRoom.getId()).thenReturn(chatRoomId);// chatRoom.getId()를 호출하면 미리 설정한 chatRoomId(1L)를 반환
     when(chatRoomRepository.findById(chatRoomId)).thenReturn(Optional.of(chatRoom));
     when(chatRoom.getBuyer()).thenReturn(member.getMember());
 
@@ -222,7 +250,8 @@ class ChatroomServiceTest {
     chatroomService.deleteChatRoom(chatRoomId, member);
 
     // Then
-    verify(chatRoomRepository).deleteById(chatRoomId);
+    verify(chatRoom).deleted(member);
+    verify(chatRoomRepository).save(chatRoom);
   }
 
   @Test
@@ -247,21 +276,283 @@ class ChatroomServiceTest {
     // Given
     Long chatRoomId = 1L;
     Member member = new Member("test@test", "완구");
-    ChatRoom chatRoom = mock(ChatRoom.class);
+    member.setId(1L);
     Member otherMember = new Member("other@test", "다른사람");
+    otherMember.setId(2L);
+    Member anonymous = new Member("other@test", "모르는사람");
+    ChatRoom chatRoom = ChatRoom.builder()
+        .seller(member)
+        .buyer(otherMember)
+        .build();
+    chatRoom.setId(chatRoomId);
 
-    ReflectionTestUtils.setField(member, "id", 1L); // memberId를 1L로 세팅
-    ReflectionTestUtils.setField(otherMember, "id", 2L);
 
     when(chatRoomRepository.findById(chatRoomId)).thenReturn(Optional.of(chatRoom));
-    when(chatRoom.getBuyer()).thenReturn(otherMember); // 다른 사용자가 구매자로 설정됨
 
     // When & Then
-    assertThatThrownBy(() -> chatroomService.deleteChatRoom(chatRoomId, member))
+    assertThatThrownBy(() -> chatroomService.deleteChatRoom(chatRoomId, anonymous))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("채팅방 삭제 권한이 없습니다.");
 
     verify(chatRoomRepository).findById(chatRoomId);
-    verify(chatRoomRepository, never()).deleteById(any());
+    verify(chatRoomRepository, never()).save(any());
+  }
+
+  @Test
+  void 거래완료_구매자() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    chatRoom.setTradeBuyerComplete(true);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.completeTrade(1L, buyer);
+    // Then
+    assertThat(chatRoom.isTradeBuyerComplete()).isTrue();
+    assertThat(chatRoom.isTradeSellerComplete()).isFalse();
+    assertThat(chatRoom.getTradeStatus()).isNotEqualTo(TradeStatus.COMPLETE);
+  }
+  @Test
+  void 거래완료_판매자() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    chatRoom.setTradeSellerComplete(true);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.completeTrade(1L, seller);
+    // Then
+    assertThat(chatRoom.isTradeBuyerComplete()).isFalse();
+    assertThat(chatRoom.isTradeSellerComplete()).isTrue();
+    assertThat(chatRoom.getTradeStatus()).isNotEqualTo(TradeStatus.COMPLETE);
+  }
+  @Test
+  void 거래완료_양쪽_모두_완료() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+    chatRoom.setTradeBuyerComplete(true);
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.completeTrade(1L, seller);
+    // Then
+    assertThat(chatRoom.isTradeBuyerComplete()).isTrue();
+    assertThat(chatRoom.isTradeSellerComplete()).isTrue();
+    assertThat(chatRoom.getTradeStatus()).isEqualTo(TradeStatus.COMPLETE);
+  }
+  @Test
+  void 거래완료_권한없음() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    Member anonymous =  new Member("test@test", "누굴까요");
+    anonymous.setId(9L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When & Then
+    assertThatThrownBy(() -> chatroomService.completeTrade(1L, anonymous))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("거래 완료 권한이 없습니다.");
+
+    then(chatRoomRepository).shouldHaveNoMoreInteractions();
+  }
+
+  @Test
+  void 거래취소_구매자() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.cancelTrade(1L, buyer);
+    // Then
+    assertThat(chatRoom.getTradeStatus()).isEqualTo(TradeStatus.CANCEL);
+    verify(post).setStatus(TradeStatus.CANCEL);
+  }
+  @Test
+  void 거래취소_판매자() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.cancelTrade(1L, seller);
+    // Then
+    assertThat(chatRoom.getTradeStatus()).isEqualTo(TradeStatus.CANCEL);
+    verify(post).setStatus(TradeStatus.CANCEL);
+  }
+  @Test
+  void 거래취소_이미취소된거래_예외발생() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.cancelTrade(1L, seller);
+    // Then
+    assertThatThrownBy(() -> chatroomService.cancelTrade(1L, buyer))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("이미 거래가 취소되었습니다.");
+
+    verify(post).setStatus(TradeStatus.CANCEL);
+  }
+  @Test
+  void 거래취소_권한없음() {
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    Member anonymous =  new Member("test@test", "누굴까요");
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When & Then
+    assertThatThrownBy(() -> chatroomService.cancelTrade(1L, anonymous))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("권한이 없습니다.");
+  }
+  @Test
+  void 거래재시도_성공(){
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+    chatRoom.setTradeStatus(TradeStatus.CANCEL);
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When
+    chatroomService.reopenTrade(1L, buyer);
+    // Then
+    assertThat(chatRoom.getTradeStatus()).isEqualTo(TradeStatus.TRADE);
+    assertThat(chatRoom.isTradeSellerComplete()).isFalse();
+    assertThat(chatRoom.isTradeBuyerComplete()).isFalse();
+    verify(post).setStatus(TradeStatus.TRADE);
+  }
+  @Test
+  void 거래재시도_취소된거래가아닐경우_예외발생(){
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+    chatRoom.setTradeStatus(TradeStatus.TRADE);
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When & Then
+    assertThatThrownBy(() -> chatroomService.reopenTrade(1L, buyer))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("취소된 거래만 재거래가 가능합니다.");
+
+  }
+  @Test
+  void 거래재시도_권한없음(){
+    // Given
+    Member buyer =  new Member("test@test", "구매자");
+    buyer.setId(1L);
+    Member seller =  new Member("test@test", "판매자");
+    seller.setId(2L);
+    Member anonymous =  new Member("test@test", "누굴까요");
+    ItemPost post = mock(ItemPost.class);
+    ChatRoom chatRoom = ChatRoom.of(
+        buyer,
+        seller,
+        post
+    );
+    chatRoom.setId(1L);
+
+    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    // When & Then
+    assertThatThrownBy(() -> chatroomService.reopenTrade(1L, anonymous))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("권한이 없습니다.");
   }
 }
