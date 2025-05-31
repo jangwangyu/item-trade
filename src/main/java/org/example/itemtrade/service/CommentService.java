@@ -1,6 +1,5 @@
 package org.example.itemtrade.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.Comment;
 import org.example.itemtrade.domain.ItemPost;
