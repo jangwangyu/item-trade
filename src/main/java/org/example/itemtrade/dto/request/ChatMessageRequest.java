@@ -13,7 +13,5 @@ public class ChatMessageRequest {
     private String type;
 
 
-  public ChatMessageRequest(String content) {
-    this.content = content;
-  }
+
 }
