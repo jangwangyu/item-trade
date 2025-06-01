@@ -95,6 +95,7 @@ public class MemberService {
     memberBlockRepository.delete(memberBlock);
   }
 
+  // 회원 차단 여부 확인
   public Boolean isMemberBlocked(Member blocker, Member blocked) {
     return memberBlockRepository.existsByBlockerAndBlocked(blocker, blocked);
   }
@@ -110,6 +111,7 @@ public class MemberService {
         new IllegalArgumentException("사용자를 찾을 수 없습니다."));
   }
 
+  // 차단된 회원 목록 조회
   public List<Member> getBlockedMembers(Member member) {
     return memberBlockRepository.findAllByBlocker(member).stream()
         .map(MemberBlock::getBlocked)
