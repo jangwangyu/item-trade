@@ -47,10 +47,11 @@ public class ChatMessage implements SoftDelete {
   private boolean deleted = false;
 
 
-  public ChatMessage(Member sender, ChatRoom chatRoom, String content) {
+  public ChatMessage(Member sender, ChatRoom chatRoom, String content, String type) {
     this.sender = sender;
     this.chatRoom = chatRoom;
     this.content = content;
+    this.type = type;
     this.isRead = false;
     this.createdAt = LocalDateTime.now();
   }
