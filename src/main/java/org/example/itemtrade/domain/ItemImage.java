@@ -18,6 +18,7 @@ import org.example.itemtrade.dto.SoftDelete;
 @Builder
 @AllArgsConstructor
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ItemImage implements SoftDelete {
