@@ -28,20 +28,20 @@ spring:
       client:
         registration:
           kakao:
-            client-id: d74a0fd3881f724cfac72c719b21f060
-            client-secret: M18ZJOWbHqLw7nBPlKGogFsMSHZ4aSrO
-            client-name: kakao
+            client-id:
+            client-secret:
+            client-name:
             scope:
               - profile_nickname
               - account_email
               - birthday
               - birthyear
-            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            redirect-uri:
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
           google:
-            client-id: 17131993840-b1gajq42qaqlif3erqsnllho7qnf5g7d.apps.googleusercontent.com
-            client-secret: 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
+            client-id:
+            client-secret:
             scope:
               - profile
               - email
