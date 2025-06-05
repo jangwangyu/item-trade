@@ -42,7 +42,7 @@ public class ChatRoomController {
 
     // 채팅방 생성
     ChatRoom room = chatroomService.createChatRoom(member, postId);
-    System.out.println("🌐 요청 도착: itemPostId=" + postId);
+
     return "redirect:/chat/" + room.getId();
   }
 

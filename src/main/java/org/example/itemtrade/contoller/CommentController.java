@@ -42,7 +42,6 @@ public class CommentController {
       @RequestBody CommentCreateRequest request) {
 
     CommentDto comment = commentService.addComment(request, postId, member);
-    System.out.println("💬 요청된 댓글 내용: " + request.content());
     return ResponseEntity.ok(comment);
   }
 
