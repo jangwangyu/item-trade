@@ -58,7 +58,4 @@ public class MyPageService {
     memberRepository.save(user);
   }
 
-  // 회원 탈퇴 복구
-
-
 }
