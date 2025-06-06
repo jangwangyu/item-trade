@@ -26,8 +26,6 @@ public class ChatMessageController {
   // 전송
   @MessageMapping("/chat/{roomId}/send")
   public void sendMessage(@DestinationVariable Long roomId, @Payload ChatMessageRequest request) {
-    System.out.println(">>> WebSocket 메세지 수신 roomId: " + roomId + ", content: " + request.getContent());
-
     ChatMessageDto message = chatMessageService.sendMessage(roomId, request);
 
     simpMessagingTemplate.convertAndSend("/topic/chat/" + roomId, message);
