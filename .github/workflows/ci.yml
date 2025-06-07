@@ -37,28 +37,25 @@ jobs:
       - name: Cache Gradle packages
         uses: gradle/gradle-build-action@v2
 
-      - name: Create application.yml
-        run: |
-          mkdir -p src/main/resources
-          echo "spring:" > src/main/resources/application.yml
-          echo "  datasource:" >> src/main/resources/application.yml
-          echo "    url: jdbc:mysql://localhost:3309/item_trade" >> src/main/resources/application.yml
-          echo "    username: root" >> src/main/resources/application.yml
-          echo "    password: ${{ secrets.DB_PASSWORD }}" >> src/main/resources/application.yml
-          echo "  security:" >> src/main/resources/application.yml
-          echo "    oauth2:" >> src/main/resources/application.yml
-          echo "      client:" >> src/main/resources/application.yml
-          echo "        registration:" >> src/main/resources/application.yml
-          echo "          kakao:" >> src/main/resources/application.yml
-          echo "            client-id: ${{ secrets.KAKAO_ID }}" >> src/main/resources/application.yml
-          echo "            client-secret: ${{ secrets.KAKAO_SECRET }}" >> src/main/resources/application.yml
-          echo "          google:" >> src/main/resources/application.yml
-          echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/main/resources/application.yml
-          echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/main/resources/application.yml
+
       - name: Create application-test.yml
         run: |
-          mkdir -p src/test/resources
-          cat <<EOF > src/test/resources/application-test.yml
+          mkdir -p src/main/resources
+          echo "spring:" > src/main/resources/application-test.yml
+          echo "  datasource:" >> src/main/resources/application-test.yml
+          echo "    url: jdbc:mysql://localhost:3309/item_trade" >> src/main/resources/application-test.yml
+          echo "    username: root" >> src/main/resources/application-test.yml
+          echo "    password: ${{ secrets.DB_PASSWORD }}" >> src/main/resources/application-test.yml
+          echo "  security:" >> src/main/resources/application-test.yml
+          echo "    oauth2:" >> src/main/resources/application-test.yml
+          echo "      client:" >> src/main/resources/application-test.yml
+          echo "        registration:" >> src/main/resources/application-test.yml
+          echo "          kakao:" >> src/main/resources/application-test.yml
+          echo "            client-id: ${{ secrets.KAKAO_ID }}" >> src/main/resources/application-test.yml
+          echo "            client-secret: ${{ secrets.KAKAO_SECRET }}" >> src/main/resources/application-test.yml
+          echo "          google:" >> src/main/resources/application-test.yml
+          echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/main/resources/application-test.yml
+          echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/main/resources/application-test.yml
 
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
