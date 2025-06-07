@@ -19,13 +19,13 @@ spring:
       client:
         registration:
           kakao:
-            client-id: test
-            client-secret: test
+            client-id: test-kakao
+            client-secret: test-kakao-secret
             provider: kakao
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           google:
-            client-id: test
-            client-secret: test
+            client-id: test-google
+            client-secret: test-google-secret
             provider: google
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
