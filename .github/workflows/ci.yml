@@ -55,6 +55,7 @@ jobs:
           echo "          google:" >> src/main/resources/application.yml
           echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/main/resources/application.yml
           echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/main/resources/application.yml
-
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
       - name: Run tests
         run: ./gradlew test --no-daemon
