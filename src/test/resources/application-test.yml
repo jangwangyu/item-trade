@@ -9,7 +9,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-    open-in-view: true
     properties:
       hibernate:
         format_sql: true
@@ -21,13 +20,21 @@ spring:
           kakao:
             client-id: test-kakao
             client-secret: test-kakao-secret
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - account_email
             provider: kakao
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
           google:
             client-id: test-google
             client-secret: test-google-secret
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
             provider: google
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
