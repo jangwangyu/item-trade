@@ -30,7 +30,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @DisplayName("비즈니스 로직 - 마이페이지")
 @ExtendWith(MockitoExtension.class)
 class MyPageServiceTest {

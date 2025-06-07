@@ -37,8 +37,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
-
+@ActiveProfiles("test")
 @DisplayName("비즈니스 로직 - 게시물")
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
