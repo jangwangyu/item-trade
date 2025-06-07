@@ -56,9 +56,8 @@ jobs:
           echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/main/resources/application.yml
           echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/main/resources/application.yml
 
-      - name: Run tests
-        run: ./gradlew test -Dspring.profiles.active=test --no-daemon
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
+
       - name: Run tests
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test -Dspring.profiles.active=test --no-daemon
