@@ -40,22 +40,24 @@ jobs:
 
       - name: Create application-test.yml
         run: |
-          mkdir -p src/main/resources
-          echo "spring:" > src/main/resources/application-test.yml
-          echo "  datasource:" >> src/main/resources/application-test.yml
-          echo "    url: jdbc:mysql://localhost:3309/item_trade" >> src/main/resources/application-test.yml
-          echo "    username: root" >> src/main/resources/application-test.yml
-          echo "    password: ${{ secrets.DB_PASSWORD }}" >> src/main/resources/application-test.yml
-          echo "  security:" >> src/main/resources/application-test.yml
-          echo "    oauth2:" >> src/main/resources/application-test.yml
-          echo "      client:" >> src/main/resources/application-test.yml
-          echo "        registration:" >> src/main/resources/application-test.yml
-          echo "          kakao:" >> src/main/resources/application-test.yml
-          echo "            client-id: ${{ secrets.KAKAO_ID }}" >> src/main/resources/application-test.yml
-          echo "            client-secret: ${{ secrets.KAKAO_SECRET }}" >> src/main/resources/application-test.yml
-          echo "          google:" >> src/main/resources/application-test.yml
-          echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/main/resources/application-test.yml
-          echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/main/resources/application-test.yml
+          mkdir -p src/test/resources
+          echo "spring:" > src/test/resources/application-test.yml
+          echo "  datasource:" >> src/test/resources/application-test.yml
+          echo "    url: jdbc:mysql://localhost:3309/item_trade" >> src/test/resources/application-test.yml
+          echo "    username: root" >> src/test/resources/application-test.yml
+          echo "    password: ${{ secrets.DB_PASSWORD }}" >> src/test/resources/application-test.yml
+          echo "  security:" >> src/test/resources/application-test.yml
+          echo "    oauth2:" >> src/test/resources/application-test.yml
+          echo "      client:" >> src/test/resources/application-test.yml
+          echo "        registration:" >> src/test/resources/application-test.yml
+          echo "          kakao:" >> src/test/resources/application-test.yml
+          echo "            client-id: ${{ secrets.KAKAO_ID }}" >> src/test/resources/application-test.yml
+          echo "            client-secret: ${{ secrets.KAKAO_SECRET }}" >> src/test/resources/application-test.yml
+          echo "            redirect-uri: http://localhost:8080/login/oauth2/code/kakao" >> src/test/resources/application-test.yml
+          echo "          google:" >> src/test/resources/application-test.yml
+          echo "            client-id: ${{ secrets.GOOGLE_ID }}" >> src/test/resources/application-test.yml
+          echo "            client-secret: ${{ secrets.GOOGLE_SECRET }}" >> src/test/resources/application-test.yml
+          echo "            redirect-uri: http://localhost:8080/login/oauth2/code/google" >> src/test/resources/application-test.yml
 
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
