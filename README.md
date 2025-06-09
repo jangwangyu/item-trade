@@ -92,32 +92,9 @@ OAuth2 로그인 흐름: 사용자 → 소셜 인증 → Spring Security → Cus
 * **TradeHistory**: 거래자(구매자/판매자), 관련 게시글, 거래 완료 시각
 
 > ERD 시각화는 `/docs/ERD.png` 참고
+ ![ERD](./docs/ERD.png)
 
-## 실행 방법
 
-1. MySQL 실행 및 DB 생성
-
-```
-CREATE DATABASE item_trade CHARACTER SET utf8mb4;
-```
-
-2. `src/main/resources/application.yml` 설정
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/item_trade
-    username: root
-    password: yourpassword
-```
-
-3. 프로젝트 실행
-
-```
-./gradlew bootRun
-```
-
----
 
 ## 테스트 및 보완 예정 항목
 
@@ -136,15 +113,16 @@ spring:
 
     * OAuth2 로그인 후 인증 세션 유지 검증
     * Form 로그인 및 접근 제어 테스트
+* 테스트 코드 CI 통합 (GitHub Actions 적용)
+
+    * 테스트 커버리지 확인 및 CI 통과 여부 검증
 
 ### 보완 및 리팩토링 예정 기능
 
 * 게시글 검색 기능 개선 (게임명, 닉네임 등 복합 검색)
 * 채팅 신고 기능 (신고 데이터 저장 및 관리자 처리 시나리오)
 * 사용자 알림 기능 (신고 알림, 거래 완료 알림 등)
-* 거래 요청/수락 기능 UI + 비즈니스 로직 구현
 * 전체 API Swagger 문서화 (SpringDoc or Swagger-UI)
-* 테스트 코드 CI 통합 (GitHub Actions 적용 시 커버리지 확인)
 
 ---
 
@@ -174,3 +152,27 @@ spring:
 * 실시간 기능(WebSocket), OAuth2 로그인, CRUD 기능을 모두 갖춘 복합형 프로젝트
 * 확장 가능성과 유지보수를 고려한 구조적 설계 (Controller - Service - Repository)
 * 채팅, 거래, 게시판, 회원 기능을 모두 구현한 실전형 프로젝트
+
+---
+
+## 핵심 로직 시연 영상
+
+#### 1. 소셜 로그인 → 게시글 등록 (이미지 첨부 포함)
+> `/docs/login-post.gif` 참고
+ ![login-post](./docs/login-post.gif)
+
+#### 2. 게시글 클릭 → 채팅방 생성 → 메시지 전송 및 읽음 확인
+> `/docs/chat-flow.gif` 참고 
+ ![chat](./docs/chat-flow.gif)
+
+#### 3. 거래 완료
+> `/docs/complete.gif` 참고
+![complete](./docs/complete.gif)
+
+#### 4. 거래 취소 -> 재거래
+> `/docs/cancel-retrade.gif` 참고
+![cancel-retrade](./docs/cancel-retrade.gif)
+
+#### 5. 마이페이지 조회 + 사용자 차단 → 차단 시 채팅 불가
+> `/docs/mypage-block.gif` 참고
+ ![chat](./docs/mypage-block.gif)
