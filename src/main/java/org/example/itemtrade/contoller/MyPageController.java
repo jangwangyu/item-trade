@@ -31,14 +31,19 @@ public class MyPageController {
 
     List<ItemPostResponse> posts = myPageService.getMyPosts(member);
     List<Member> blockedMembers = memberService.getBlockedMembers(member);
+    List<ItemPostResponse> likedPosts = myPageService.getMyLikes(member);
+
 
     model.addAttribute("posts", posts);
     model.addAttribute("loginType", loginType);
     model.addAttribute("member", member);
     model.addAttribute("blockedMembers", blockedMembers);
+    model.addAttribute("likedPosts", likedPosts);
 
     return "/mypage";
   }
+
+
 
   // 회원정보 수정
   @PutMapping("/mypage/update")
