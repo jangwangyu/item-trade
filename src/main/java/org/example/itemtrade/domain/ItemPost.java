@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,7 +36,7 @@ import org.example.itemtrade.enums.TradeStatus;
 public class ItemPost implements SoftDelete { // 판매글
   @Id
   @Column(name = "item_post_id")
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private String title;
@@ -49,6 +50,9 @@ public class ItemPost implements SoftDelete { // 판매글
 
   @Enumerated(EnumType.STRING)
   private TradeStatus status = TradeStatus.TRADE;// 뷰 노출용
+
+  @Column(nullable = false)
+  private int likeCount = 0; // 좋아요 수
 
 
 
@@ -82,6 +86,10 @@ public class ItemPost implements SoftDelete { // 판매글
   @OneToMany(mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ChatRoom> chatRooms = new ArrayList<>();
 
+  @OneToMany
+  (mappedBy = "itemPost", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Like> likes = new ArrayList<>();
+
   public void addChatRoom(ChatRoom chatRoom) {
     chatRooms.add(chatRoom);
     chatRoom.setItemPost(this);
@@ -111,5 +119,6 @@ public class ItemPost implements SoftDelete { // 판매글
   public boolean isDeleted() {
     return this.deleted;
   }
+
 
 }

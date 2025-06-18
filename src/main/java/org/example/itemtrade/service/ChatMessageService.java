@@ -21,6 +21,7 @@ public class ChatMessageService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatMessageRepository chatMessageRepository;
   private final MemberRepository memberRepository;
+  private final ChatroomService chatroomService;
 
   // 메세지 전송
   public ChatMessageDto sendMessage(Long roomId, ChatMessageRequest request) {
@@ -37,8 +38,7 @@ public class ChatMessageService {
   @Transactional
   public ChatMessageDto sendMessages(Long roomId, Member sender, String content, String type) {
     // 채팅방 존재하는지 확인
-    ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
-        new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
 
     chatRoom.restoreFor(sender);
 
@@ -55,8 +55,7 @@ public class ChatMessageService {
   // 메세지를 시간 순으로 정렬
   public List<ChatMessageDto> getMessageByRoom(Long roomId, Member sender) {
     // 채팅방 존재하는지 확인
-    ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
-        new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
 
     List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomOrderByCreatedAtAsc(chatRoom);
 
@@ -73,8 +72,7 @@ public class ChatMessageService {
 
   // 읽지 않은 메세지 조회
   public Long UnreadMessageCount(Long roomId, Member member) {
-    ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() ->
-        new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
 
     return chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member);
   }

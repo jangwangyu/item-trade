@@ -58,6 +58,12 @@ public class PostService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
   }
 
+  public ItemPost PostById(Long postId) {
+    // 특정 게시글을 조회하여 반환
+    return postRepository.findById(postId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
+  }
+
   // 게시글 작성
   public ItemPostResponse createPost(ItemPostCreateRequest request, Member member, List<MultipartFile> images)
       throws IOException {
@@ -105,8 +111,7 @@ public class PostService {
 
   // 수정
   public void updatePost(Long postId, ItemPostUpdateRequest request ,Member member, List<MultipartFile> images, List<Long> deletedItemImageIds) throws IOException {
-    ItemPost post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+    ItemPost post = PostById(postId);
 
     if (!post.getSeller().getId().equals(member.getId())) {
       throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
@@ -168,8 +173,7 @@ public class PostService {
 
   // 특정 게시글 삭제
   public void deletePost(Long postId ,Member member) {
-    ItemPost post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+    ItemPost post = PostById(postId);
 
     if(!post.getSeller().getId().equals(member.getId())) {
       throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");

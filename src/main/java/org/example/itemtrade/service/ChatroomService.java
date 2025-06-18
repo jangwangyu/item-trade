@@ -24,6 +24,11 @@ public class ChatroomService {
   private final ChatMessageRepository chatMessageRepository;
   private final MemberService memberService;
 
+  public ChatRoom getChatRoomById(Long id) {
+    return chatroomRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+  }
+
   // 채팅방 생성
   public ChatRoom createChatRoom(Member buyer, Long postId) {
 
@@ -87,8 +92,7 @@ public class ChatroomService {
   // 채팅방 삭제
   public void deleteChatRoom(Long id, Member user) {
     // 채팅방이 존재하는지 확인
-    ChatRoom chatRoom = chatroomRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+    ChatRoom chatRoom = getChatRoomById(id);
 
     boolean isUser = chatRoom.getBuyer().getId().equals(user.getId()) || chatRoom.getSeller().getId().equals(user.getId());
 
@@ -102,8 +106,7 @@ public class ChatroomService {
   // 거래 완료
   public void completeTrade(Long id, Member user) {
     // 채팅방이 존재하는지 확인
-    ChatRoom chatRoom = chatroomRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+    ChatRoom chatRoom = getChatRoomById(id);
 
     // 거래 완료 권한 체크
     if(user.equals(chatRoom.getBuyer())) {
@@ -125,8 +128,7 @@ public class ChatroomService {
   // 거래 취소
   public void cancelTrade(Long id, Member user) {
     // 채팅방이 존재하는지 확인
-    ChatRoom chatRoom = chatroomRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+    ChatRoom chatRoom = getChatRoomById(id);
 
     // 취소 권한 체크
     if(!chatRoom.getBuyer().equals(user) && !chatRoom.getSeller().equals(user)) {
@@ -146,8 +148,7 @@ public class ChatroomService {
   // 거래 재시도
   public void reopenTrade(Long id, Member user) {
     // 채팅방이 존재하는지 확인
-    ChatRoom chatRoom = chatroomRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+    ChatRoom chatRoom = getChatRoomById(id);
 
     // 취소 권한 체크
     if(!chatRoom.getBuyer().equals(user) && !chatRoom.getSeller().equals(user)) {

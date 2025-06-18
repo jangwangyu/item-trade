@@ -1,5 +1,6 @@
 package org.example.itemtrade.repository;
 
+import java.util.Collection;
 import java.util.List;
 import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;

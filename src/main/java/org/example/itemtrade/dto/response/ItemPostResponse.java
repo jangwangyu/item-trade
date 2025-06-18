@@ -18,8 +18,11 @@ public record ItemPostResponse(
     String sellerNickname,
     Long sellerId,
     List<ImageDto> imagePaths,
-    TradeStatus tradeStatus){
-  public static ItemPostResponse from(ItemPost post) {
+    TradeStatus tradeStatus,
+    boolean isLiked,
+    int likeCount) {
+
+  public static ItemPostResponse from(ItemPost post, boolean isLiked) {
     List<ImageDto> imagePaths = post.getImages().stream()
         .map(itemImage -> new ImageDto(itemImage.getId(), itemImage.getImagePath()))
         .toList();
@@ -34,11 +37,17 @@ public record ItemPostResponse(
         post.getSeller().getNickName(),
         post.getSeller().getId(),
         imagePaths,
-        post.getStatus()
+        post.getStatus(),
+        isLiked,
+        post.getLikeCount()
     );
   }
 
   public String getCategoryDisplayName() {
     return category != null ? category.getDisplayName() : "미정";
+  }
+
+  public static ItemPostResponse from(ItemPost post) {
+    return from(post, false);  // 기본값 설정
   }
 }
