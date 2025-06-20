@@ -38,7 +38,7 @@
      th:href="@{'/posts/' + ${post.id}}"
      class="list-group-item list-group-item-action mb-2 p-3 border rounded bg-white">
 
-    <h5 class="mb-1 fw-bold" th:text="${post.title}">게시글 제목</h5>
+    <h5 class="mb-1 fw-bold" th:text="${post.title()}">게시글 제목</h5>
     <p class="mb-1 text-muted" th:text="${post.sellerNickname()}">작성자</p>
 
     <!-- 카테고리 + 거래 상태 -->
@@ -50,6 +50,16 @@
       <span th:if="${post.tradeStatus.name() == 'COMPLETE'}" class="badge bg-success ms-1">거래완료</span>
       <span th:if="${post.tradeStatus.name() == 'CANCEL'}" class="badge bg-secondary ms-1">거래가능</span>
     </p>
+
+    <div class="position-absolute top-0 end-0 m-2">
+      <button type="button"
+              th:classappend="${post.isLiked} ? 'text-danger' : 'text-muted'"
+              class="btn btn-sm border-0 bg-transparent like-button"
+              th:data-post-id="${post.id}">
+        <span th:text="${post.isLiked} ? '❤️' : '🤍'"></span>
+        <span th:text="${post.likeCount}">0</span>
+      </button>
+    </div>
 
     <!-- 가격 정보 -->
     <p class="mb-0 fw-semibold text-success">
@@ -63,5 +73,35 @@
   <a class="btn btn-primary mt-4" th:href="@{/posts/new}">게시글 작성</a>
 </section>
 
+
+
+
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".like-button").forEach(button => {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();       // 버튼 기본 동작 방지
+        event.stopPropagation();      // <a> 클릭으로 이벤트 전파 막기
+
+        const postId = this.dataset.postId;
+        const btn = this;
+
+        fetch(`/likes/${postId}`, {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(res => {
+          if (!res.ok) throw new Error("서버 오류");
+          return res.json();
+        }).then(data => {
+          btn.innerHTML = (data.liked ? "❤️ " : "🤍 ") + data.likeCount;
+          btn.classList.toggle("text-danger", data.liked);
+          btn.classList.toggle("text-muted", !data.liked);
+        }).catch(err => {
+          alert("좋아요 처리 중 오류 발생");
+        });
+      });
+    });
+  });
+</script>
 </html>

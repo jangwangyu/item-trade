@@ -22,6 +22,6 @@ public class MemberController {
 
     model.addAttribute("profile", profile);
 
-    return "/opponentpage"; // 프로필 페이지로 이동
+    return "opponentpage"; // 프로필 페이지로 이동
   }
 }

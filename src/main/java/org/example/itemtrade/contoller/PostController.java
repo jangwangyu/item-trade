@@ -54,7 +54,7 @@ public class PostController {
     } else {
       model.addAttribute("currentUserId", null);
     }
-    return "/detail";
+    return "detail";
   }
 
   // 게시글 작성
@@ -80,7 +80,7 @@ public class PostController {
     ItemPostResponse post = postService.getPostForEdit(id);
     model.addAttribute("post", post);
     model.addAttribute("categories", Category.values());
-    return "/update-form";
+    return "update-form";
   }
 
   // 게시글 수정

@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,6 +33,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Member {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+//  @EqualsAndHashCode.Include
   @Column(name = "member_id")
   @Id
   private Long id;
@@ -98,6 +100,9 @@ public class Member {
 
   @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ChatRoom> sellRooms = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Like> likes = new ArrayList<>();
 
 
   public void addBuyRoom(ChatRoom room) {

@@ -20,7 +20,7 @@ public class JoinController {
   @GetMapping("/register")
   public String register(Model model) {
     model.addAttribute("registerRequest", new MemberJoinRequest());
-    return "/register";
+    return "register";
   }
 
   @ResponseBody

@@ -70,7 +70,7 @@ class PostControllerTest {
     )
     // Then
         .andExpect(status().isOk())
-        .andExpect(view().name("/detail"))
+        .andExpect(view().name("detail"))
         .andExpect(model().attributeExists("post"))
         .andExpect(model().attributeExists("isAuthor"))
         .andExpect(model().attributeExists("comments"))

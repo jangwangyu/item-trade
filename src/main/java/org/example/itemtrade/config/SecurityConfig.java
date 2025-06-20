@@ -23,17 +23,17 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/login/**", "/login-form", "/oauth2/**", "/ws/**","/images/**","/chat.js", "/register/**","/api/register" ).permitAll()
+            .requestMatchers("/", "/login/**", "/loginForm", "/oauth2/**", "/ws/**","/images/**","/chat.js", "/register/**","/api/register").permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint((request, response, authException) -> {
-                response.sendRedirect("/login-form?needAuth=true");
+                response.sendRedirect("/loginForm?needAuth=true");
             }))
         .formLogin(form -> form
             .loginPage("/login")
             .defaultSuccessUrl("/", true) // 로그인 성공 후 이동할 URL
-            .failureUrl("/login-form?error") // 로그인 실패 시 이동할 URL
+            .failureUrl("/loginForm?error") // 로그인 실패 시 이동할 URL
             .permitAll()
         )
         .userDetailsService(customUserDetailsService)
@@ -45,7 +45,7 @@ public class SecurityConfig {
         )
         .logout(logout -> logout
             .logoutUrl("/logout") // 로그아웃 URL
-            .logoutSuccessUrl("/login-form?logout") // ✅ 로그아웃 후 이동할 URL
+            .logoutSuccessUrl("/loginForm?logout") // ✅ 로그아웃 후 이동할 URL
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID")
         );

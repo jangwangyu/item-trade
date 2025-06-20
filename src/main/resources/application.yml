@@ -10,6 +10,7 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: false
+    check-template-location: true
   web:
     resources:
       add-mappings: true
