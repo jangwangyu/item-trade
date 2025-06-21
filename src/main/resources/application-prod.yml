@@ -59,3 +59,4 @@ spring:
       max-request-size: 20MB
 file:
   upload-dir: ${UPLOAD_DIR:/home/ec2-user/upload/post}
+  chat-dir: ${CHAT_DIR:/home/ec2-user/upload/chat}

@@ -59,3 +59,4 @@ spring:
       max-request-size: 20MB
 file:
   upload-dir: ${UPLOAD_DIR:C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post}
+  chat-dir: ${CHAT_DIR:C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/chat}
