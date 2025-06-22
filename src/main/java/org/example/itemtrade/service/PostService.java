@@ -6,7 +6,6 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +22,7 @@ import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,6 +38,9 @@ public class PostService {
 
   private final ItemPostRepository postRepository;
   private final MemberBlockRepository memberBlockRepository;
+
+  @Value("${file.upload-dir}")
+  private String uploadDir;
 
   // 전체조회
   public Page<ItemPostResponse> getAllPosts(String categoryName, Integer minPrice, Integer maxPrice, Member currentUser,
@@ -77,27 +80,9 @@ public class PostService {
         .isSold(false)
         .build();
 
-    // 2. 이미지 저장 및 연관관계 설정
-    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
-    File directory = new File(uploadDir);
-    if (!directory.exists()) {
-      directory.mkdirs();
-    }
-
     for (MultipartFile image : images) {
       if(!image.isEmpty()) {
-        // 2. 파일 이름 생성
-        String originalFilename = image.getOriginalFilename();
-        String ext = Objects.requireNonNull(originalFilename)
-            .substring(originalFilename.lastIndexOf("."));
-        String storedFilename = UUID.randomUUID() + ext;
-
-        // 3. 실제 저장 경로
-        File saveFile = new File(uploadDir + storedFilename);
-        image.transferTo(saveFile);
-
-        // 4. DTO -> Entity
-        String imagePath = "/uploads/post/" + storedFilename;
+        String imagePath = saveImage(image);
         ItemImage itemImage = ItemImage.of(imagePath);
         post.addImage(itemImage);// DB 저장용 URL
       }
@@ -105,7 +90,6 @@ public class PostService {
     post.setStatus(TradeStatus.TRADE);
     postRepository.save(post);
 
-    // 5. Entity -> DTO
     return ItemPostResponse.from(post);
   }
 
@@ -143,7 +127,10 @@ public class PostService {
   }
 
   public String saveImage(MultipartFile image) throws IOException {
-    String uploadDir = "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources/uploads/post/";
+
+    if(image.isEmpty()) {
+      throw new IllegalArgumentException("이미지가 비어있습니다.");
+    }
     File directory = new File(uploadDir);
     if (!directory.exists()) {
       directory.mkdirs(); // 없으면 생성
@@ -156,9 +143,10 @@ public class PostService {
     return "/uploads/post/" + storedFilename; // DB에 저장할 경로
   }
 
+
   public void deletePhysicalImage(String imagePath) {
     try {
-      Path path = Paths.get("C:/.../resources" + imagePath);
+      Path path = Paths.get(uploadDir + imagePath);
       Files.deleteIfExists(path);
     } catch (IOException e) {
       e.printStackTrace();
