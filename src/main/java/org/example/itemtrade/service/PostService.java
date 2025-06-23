@@ -137,8 +137,9 @@ public class PostService {
     }
     String ext = Objects.requireNonNull(image.getOriginalFilename())
         .substring(image.getOriginalFilename().lastIndexOf("."));
+
     String storedFilename = UUID.randomUUID() + ext;
-    File saveFile = new File(uploadDir + storedFilename);
+    File saveFile = new File(uploadDir + "/" + storedFilename); // + 로 /처리
     image.transferTo(saveFile);
     return "/uploads/post/" + storedFilename; // DB에 저장할 경로
   }

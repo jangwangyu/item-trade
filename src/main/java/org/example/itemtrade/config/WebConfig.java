@@ -13,11 +13,19 @@ public class WebConfig implements WebMvcConfigurer {
   @Value("${file.upload-dir}")
   private String uploadDir;
 
+  @Value("${file.chat-dir}")
+  private String chatDir;
+
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/uploads/**")
+    registry.addResourceHandler("/uploads/post/**")
         .addResourceLocations("file:" + uploadDir + "/");
+
+    registry.addResourceHandler("/uploads/chat/**")
+        .addResourceLocations("file:" + chatDir + "/");
   }
+
+
 
   @Bean
   public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
