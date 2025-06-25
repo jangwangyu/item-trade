@@ -1,4 +1,4 @@
-name: item-trade CI
+name: item-trade CD
 
 on:
   push:
