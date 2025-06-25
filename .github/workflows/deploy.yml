@@ -24,32 +24,38 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      - name : Copy .jar to EC2
-        uses: appleboy/scp-action@v0.1.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
-          target: ~/deploy/
-          debug: true
+      - name: Test SSH manually
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ secrets.EC2_HOST }} "echo connected!"
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ec2-user
-            key: ${{ secrets.EC2_SSH_KEY }}
-            script: |
-              pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
-              cd ~/deploy
-              SPRING_PROFILES_ACTIVE=prod \
-              DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              KAKAO_ID=${{ secrets.KAKAO_ID }} \
-              KAKAO_SECRET=${{ secrets.KAKAO_SECRET }} \
-              GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
-              GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
-              UPLOAD_DIR=/home/ec2-user/uploads/post \
-              CHAT_DIR=/home/ec2-user/uploads/chat \
-              nohup java -jar ~/deploy/item-trade-0.0.1-SNAPSHOT.jar > ~/deploy/app.log 2>&1 &
+#      - name : Copy .jar to EC2
+#        uses: appleboy/scp-action@v0.1.0
+#        with:
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ec2-user
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
+#          target: ~/deploy/
+#          debug: true
+#
+#      - name: Deploy to EC2
+#        uses: appleboy/ssh-action@master
+#        with:
+#            host: ${{ secrets.EC2_HOST }}
+#            username: ec2-user
+#            key: ${{ secrets.EC2_SSH_KEY }}
+#            script: |
+#              pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
+#              cd ~/deploy
+#              SPRING_PROFILES_ACTIVE=prod \
+#              DB_USERNAME=${{ secrets.DB_USERNAME }} \
+#              DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+#              KAKAO_ID=${{ secrets.KAKAO_ID }} \
+#              KAKAO_SECRET=${{ secrets.KAKAO_SECRET }} \
+#              GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
+#              GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
+#              UPLOAD_DIR=/home/ec2-user/uploads/post \
+#              CHAT_DIR=/home/ec2-user/uploads/chat \
+#              nohup java -jar ~/deploy/item-trade-0.0.1-SNAPSHOT.jar > ~/deploy/app.log 2>&1 &
