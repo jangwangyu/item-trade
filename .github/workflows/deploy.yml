@@ -31,9 +31,9 @@ jobs:
 
       - name: Test SSH Connection
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > temp_key
+          echo "${{ secrets.SSH_SSH_KEY }}" > temp_key
           chmod 600 temp_key
-          ssh -o StrictHostKeyChecking=no -i temp_key ec2-user@your-ec2-ip 'echo "SSH 연결 성공"'
+          ssh -o StrictHostKeyChecking=no -i temp_key ec2-user@${{ secrets.EC2_HOST }} 'echo "SSH 연결 성공"'
 
 #      - name: Copy .jar to EC2
 #        uses: appleboy/scp-action@v0.1.0
