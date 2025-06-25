@@ -34,9 +34,10 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key_path: item.pem       # 🔥 여기 바뀜!
+          key_path: item.pem
           source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
           target: ~/deploy/
+          port: 22
           debug: true
 
       - name: Deploy to EC2
@@ -44,7 +45,8 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key_path: item.pem       # 🔥 여기 바뀜!
+          key_path: item.pem
+          port: 22
           script: |
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
             cd ~/deploy
