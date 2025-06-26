@@ -61,4 +61,5 @@ jobs:
             UPLOAD_DIR=/home/ec2-user/uploads/post \
             CHAT_DIR=/home/ec2-user/uploads/chat \
             nohup java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-            sleep 2
+            sleep 3
+            echo "✅ 배포 성공 완료!"
