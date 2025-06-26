@@ -52,7 +52,6 @@ jobs:
           debug: true
           script: |
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
-            cd ~/deploy
             echo "배포 시작"
 
             cat <<EOF > start.sh
@@ -67,7 +66,7 @@ jobs:
             export UPLOAD_DIR=/home/ec2-user/uploads/post
             export CHAT_DIR=/home/ec2-user/uploads/chat
       
-            nohup java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            nohup java -jar ~/deploy/item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
             EOF
             
             chmod +x start.sh
