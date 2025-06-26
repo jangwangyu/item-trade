@@ -49,6 +49,7 @@ jobs:
           key: ${{ secrets.EC2_PRIAVTE_KEY }}
           port: 22
           debug: true
+          script_stop: true
           script: |
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
             cd ~/deploy
@@ -64,4 +65,3 @@ jobs:
             nohup java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
             sleep 2
             echo "✅ 배포 완료!"
-            exit 0
