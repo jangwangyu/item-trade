@@ -48,36 +48,32 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-              pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
-              echo "start.sh 생성 시작"
-            cat <<EOF > /home/ec2-user/deploy/start.sh
-            #!/bin/bash
-            export SPRING_PROFILES_ACTIVE=prod
-            export DB_USERNAME=${{ secrets.DB_USERNAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export KAKAO_ID=${{ secrets.KAKAO_ID }}
-            export KAKAO_SECRET=${{ secrets.KAKAO_SECRET }}
-            export GOOGLE_ID=${{ secrets.GOOGLE_ID }}
-            export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
-            export UPLOAD_DIR=/home/ec2-user/uploads/post
-            export CHAT_DIR=/home/ec2-user/uploads/chat
-            
-            JAR_PATH="/home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar"
-            LOG_PATH="/home/ec2-user/deploy/app.log"
-            
-            echo "실행 권한 부여"
-            chmod +x "$JAR_PATH"
-            echo "JAR 실제 경로: $JAR_PATH"
-            ls -l "$JAR_PATH"
-            
-            echo "어플리케이션 실행"
-            nohup java -jar "$JAR_PATH" > "$LOG_PATH" 2>&1 &
-            disown
-            EOF
-            
-            chmod +x /home/ec2-user/deploy/start.sh
-            /home/ec2-user/deploy/start.sh
-            
-              echo "start.sh 실행"
-              chmod +x /home/ec2-user/deploy/start.sh
-              /home/ec2-user/deploy/start.sh
+            pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
+            echo "start.sh 생성 시작"
+          cat <<EOF > /home/ec2-user/deploy/start.sh
+          #!/bin/bash
+          export SPRING_PROFILES_ACTIVE=prod
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export KAKAO_ID=${{ secrets.KAKAO_ID }}
+          export KAKAO_SECRET=${{ secrets.KAKAO_SECRET }}
+          export GOOGLE_ID=${{ secrets.GOOGLE_ID }}
+          export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
+          export UPLOAD_DIR=/home/ec2-user/uploads/post
+          export CHAT_DIR=/home/ec2-user/uploads/chat
+
+          JAR_PATH="/home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar"
+          LOG_PATH="/home/ec2-user/deploy/app.log"
+
+          echo "실행 권한 부여"
+          chmod +x "$JAR_PATH"
+          echo "JAR 실제 경로: $JAR_PATH"
+          ls -l "$JAR_PATH"
+
+          echo "어플리케이션 실행"
+          nohup java -jar "$JAR_PATH" > "$LOG_PATH" 2>&1 &
+          disown
+          EOF
+          
+          chmod +x /home/ec2-user/deploy/start.sh
+          /home/ec2-user/deploy/start.sh
