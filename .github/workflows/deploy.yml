@@ -35,7 +35,7 @@ jobs:
         with:
           username: ec2-user
           host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_PRIAVTE_KEY }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
           target: ~/deploy/
           port: 22
@@ -47,7 +47,7 @@ jobs:
         with:
           username: ec2-user
           host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_PRIAVTE_KEY }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           debug: true
           script: |
@@ -68,4 +68,3 @@ jobs:
             EOF
             chmod +x start.sh
             ./start.sh
-      
