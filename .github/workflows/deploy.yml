@@ -30,11 +30,6 @@ jobs:
 #          chmod 600 item.pem
 #          ssh -o StrictHostKeyChecking=no -i item.pem ec2-user@${{ secrets.EC2_HOST }} 'echo "SSH 연결 성공"'
 
-      - name: Save SSH key to file
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > item.pem
-          chmod 600 item.pem
-
       - name: Check key file exists
         run: |
           ls -l item.pem
@@ -44,7 +39,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key_path: ./item.pem
+          key: ${{ secrets.EC2_SSH_KEY }}
           source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
           target: ~/deploy/
           port: 22
@@ -55,7 +50,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key_path: ./item.pem
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
