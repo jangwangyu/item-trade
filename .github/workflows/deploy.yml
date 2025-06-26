@@ -66,3 +66,7 @@ jobs:
             UPLOAD_DIR=/home/ec2-user/uploads/post \
             CHAT_DIR=/home/ec2-user/uploads/chat \
             nohup java -jar ~/deploy/item-trade-0.0.1-SNAPSHOT.jar > ~/deploy/app.log 2>&1 &
+
+      - name: Check key file exists
+        run: |
+          ls -l item.pem
