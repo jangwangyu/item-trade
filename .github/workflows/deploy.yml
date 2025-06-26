@@ -36,10 +36,9 @@ jobs:
           username: ec2-user
           host: ${{ secrets.EC2_HOST }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
           source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
           target: /home/ec2-user/deploy/build/libs/
-          port: 22
-          debug: true
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
