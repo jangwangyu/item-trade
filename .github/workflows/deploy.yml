@@ -54,7 +54,7 @@ jobs:
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
             cd ~/deploy
             echo "배포 시작"
-            setsid bash -c "
+            nohup bash -c '
               SPRING_PROFILES_ACTIVE=prod \
               DB_USERNAME=${{ secrets.DB_USERNAME }} \
               DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -64,5 +64,5 @@ jobs:
               GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
               UPLOAD_DIR=/home/ec2-user/uploads/post \
               CHAT_DIR=/home/ec2-user/uploads/chat \
-              java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-            " < /dev/null &> /dev/null &
+              java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1
+            ' < /dev/null &> /dev/null &
