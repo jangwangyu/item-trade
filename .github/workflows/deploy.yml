@@ -30,10 +30,6 @@ jobs:
 #          chmod 600 item.pem
 #          ssh -o StrictHostKeyChecking=no -i item.pem ec2-user@${{ secrets.EC2_HOST }} 'echo "SSH 연결 성공"'
 
-      - name: Check key file exists
-        run: |
-          ls -l item.pem
-
       - name: Copy .jar to EC2
         uses: appleboy/scp-action@v0.1.0
         with:
