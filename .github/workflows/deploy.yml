@@ -64,11 +64,10 @@ jobs:
             export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
             export UPLOAD_DIR=/home/ec2-user/uploads/post
             export CHAT_DIR=/home/ec2-user/uploads/chat
-            nohup java -jar /home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar > /home/ec2-user/deploy/app.log 2>&1 &
+            nohup java -jar /home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar > /home/ec2-user/deploy/app.log 2>&1 & disown
             EOF
-            
             chmod +x start.sh
             ./start.sh
-            disown
+
           
         
