@@ -64,9 +64,8 @@ jobs:
             export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
             export UPLOAD_DIR=/home/ec2-user/uploads/post
             export CHAT_DIR=/home/ec2-user/uploads/chat
-            nohup java -jar ~/deploy/item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
+            nohup java -jar build/libs/item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
             EOF
             chmod +x start.sh
             ./start.sh
-            tmux new-session -d -s itemtrade_session "sh start.sh"
       
