@@ -64,3 +64,4 @@ jobs:
             nohup java -jar item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
             sleep 2
             echo "✅ 배포 완료!"
+            exit 0
