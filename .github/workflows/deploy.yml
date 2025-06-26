@@ -46,7 +46,7 @@ jobs:
         with:
           username: ec2-user
           host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          key: ${{ secrets.EC2_PRIAVTE_KEY }}
           port: 22
           debug: true
           script: |
