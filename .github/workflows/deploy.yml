@@ -52,6 +52,7 @@ jobs:
           debug: true
           script: |
             pkill -f 'item-trade-0.0.1-SNAPSHOT.jar' || true
+            echo "배포 시작"
             cat <<EOF > start.sh
             #!/bin/bash
             export SPRING_PROFILES_ACTIVE=prod
@@ -63,8 +64,11 @@ jobs:
             export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
             export UPLOAD_DIR=/home/ec2-user/uploads/post
             export CHAT_DIR=/home/ec2-user/uploads/chat
-            nohup java -jar /home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
+            nohup java -jar /home/ec2-user/deploy/build/libs/item-trade-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
             EOF
+            
             chmod +x start.sh
             ./start.sh
+            disown
+          
         
