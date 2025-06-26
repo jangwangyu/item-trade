@@ -43,6 +43,7 @@ jobs:
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
+        continue-on-error: true
         with:
           username: ec2-user
           host: ${{ secrets.EC2_HOST }}
