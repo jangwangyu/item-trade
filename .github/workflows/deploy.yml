@@ -49,3 +49,4 @@ jobs:
           port: 22
           script: |
             nohup /home/ec2-user/deploy/start.sh > /home/ec2-user/deploy/ci.log 2>&1 &
+# CD에서 JAR를 직접 실행시키지 않고, start.sh 스크립트를 통해 실행하기로 함.
