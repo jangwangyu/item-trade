@@ -44,7 +44,6 @@ public class MyPageController {
   }
 
 
-
   // 회원정보 수정
   @PutMapping("/mypage/update")
   public String updateMember(@AuthenticationPrincipal UserType user, MemberUpdateRequest memberUpdateRequest) {
