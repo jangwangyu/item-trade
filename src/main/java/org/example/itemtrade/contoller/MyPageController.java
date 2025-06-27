@@ -40,7 +40,7 @@ public class MyPageController {
     model.addAttribute("blockedMembers", blockedMembers);
     model.addAttribute("likedPosts", likedPosts);
 
-    return "/mypage";
+    return "mypage";
   }
 
 

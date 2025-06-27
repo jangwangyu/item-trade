@@ -33,7 +33,7 @@ public class ChatRoomController {
 
     model.addAttribute("chatRooms", chatRooms);
 
-    return "/chat-list";
+    return "chat-list";
   }
 
   // 채팅방 생성
@@ -60,7 +60,7 @@ public class ChatRoomController {
     model.addAttribute("isSeller",room.sellerId().equals(member.getId()));
     model.addAttribute("isBuyer", room.buyerId().equals(member.getId()));
 
-    return "/chat";
+    return "chat";
   }
 
 
