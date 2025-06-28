@@ -1,4 +1,18 @@
 spring:
+  application:
+    name: item-trade
+  jackson:
+    time-zone: Asia/Seoul
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+    check-template-location: true
+  web:
+    resources:
+      add-mappings: true
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
