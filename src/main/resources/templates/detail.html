@@ -36,7 +36,7 @@
 
       <!-- 버튼 영역 -->
       <div class="d-flex gap-2">
-        <form th:action="@{'/chat/' + ${post.id}}" method="post">
+        <form th:if="${!isAuthor}" th:action="@{'/chat/' + ${post.id}}" method="post">
           <button type="submit" class="btn btn-outline-success">채팅하기</button>
         </form>
         <a th:if="${isAuthor}" th:href="@{'/posts/edit/' + ${post.id}}" class="btn btn-outline-primary">수정</a>
