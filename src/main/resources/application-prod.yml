@@ -6,7 +6,6 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
-    timezone: Asia/Seoul
     mode: HTML
     encoding: UTF-8
     cache: false
