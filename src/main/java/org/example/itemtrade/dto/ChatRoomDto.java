@@ -20,7 +20,8 @@ public record ChatRoomDto(
     boolean isTradeSellerComplete,
     boolean isTradeBuyerComplete,
     Long buyerId,
-    Long sellerId
+    Long sellerId,
+    String sellerProfileImageUrl
 
 )
 
@@ -46,7 +47,8 @@ public record ChatRoomDto(
             chatRoom.isTradeSellerComplete(),
             chatRoom.isTradeBuyerComplete(),
             Objects.requireNonNull(chatRoom.getBuyer()).getId(),
-            Objects.requireNonNull(chatRoom.getSeller()).getId()
+            Objects.requireNonNull(chatRoom.getSeller()).getId(),
+            Objects.requireNonNull(chatRoom.getSeller()).getProfileImageUrl()
         );
     }
 }
