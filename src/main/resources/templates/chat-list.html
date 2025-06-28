@@ -41,7 +41,7 @@
 
       <!-- 왼쪽: 프로필 + 내용 -->
       <div class="d-flex align-items-center gap-3">
-        <img th:src="@{${chat.itemTitle}}" class="profile-img" alt="프로필">
+        <img th:src="@{${chat.sellerProfileImageUrl()}}" class="profile-img" alt="프로필">
         <div>
           <div class="fw-semibold" th:text="${chat.itemTitle}">닌텐도 스위치 팝니다</div>
           <div class="text-muted ellipsis" th:text="${chat.lastMessage}">마지막 메시지가 표시됩니다</div>
