@@ -22,7 +22,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
+
+      - name: Check built JAR
+        run: ls -l build/libs/
 
 #      - name: Test SSH connection
 #        run: |
@@ -39,6 +42,15 @@ jobs:
           port: 22
           source: build/libs/item-trade-0.0.1-SNAPSHOT.jar
           target: /home/ec2-user/deploy/build/libs/
+
+      - name: Check JAR on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
+          script: ls -l /home/ec2-user/deploy/build/libs/
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
