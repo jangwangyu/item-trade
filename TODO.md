@@ -61,4 +61,4 @@
 
 - [x] 페이징 - ajax로 불러오기
 - [ ] Thymeleaf 템플릿 -> react로 전환 (예정)
-- [ ] CD 배포 후 local -> prod로 코드 변경(진행중)
+- [x] CD 배포 후 local -> prod로 코드 변경
