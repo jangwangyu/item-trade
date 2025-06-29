@@ -2,7 +2,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const roomId = window.roomId;
   const senderId = window.senderId;
 
-  const socket = new SockJS('http://localhost:8080/ws');
+  const sockJsProtocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+  const wsHost = window.location.host;
+  const wsPath = '/ws';
+
+  const socket = new SockJS(`${sockJsProtocol}//${wsHost}${wsPath}`);
   const stompClient = Stomp.over(socket);
 
   let initialized = false;
