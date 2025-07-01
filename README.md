@@ -167,3 +167,25 @@ OAuth2 로그인 흐름: 사용자 → 소셜 인증 → Spring Security → Cus
 #### 5. 마이페이지 조회 + 사용자 차단 → 차단 시 채팅 불가
 > `/docs/mypage-block.gif` 참고
  ![chat](./docs/mypage-block.gif)
+
+
+---
+## 🟢 배포 URL
+- [https://item-trade.co.kr](https://item-trade.co.kr)
+
+## CI/CD 자동 배포
+- **GitHub Actions**를 사용한 EC2 자동 배포 파이프라인 구축
+- main 브랜치에 merge 시 자동 빌드 및 배포 진행
+- **배포 자동화로 실시간 피드백 및 신속한 서비스 개선 가능**
+
+## 테스트 계정 (즉시 체험)
+- **이메일:** test@item.com
+- **비밀번호:** test1234
+> 위 계정으로 로그인하면, 아래 모든 기능을 직접 체험할 수 있습니다!
+
+## 주요 체험 가능 기능
+- **OAuth2 소셜 로그인 (카카오/구글)**
+- **실시간 1:1 채팅 (WebSocket)**
+- **아이템 거래 요청/수락**
+- **찜하기, 게시글 등록/수정/관리 등 거래 플랫폼 주요 기능**
+
