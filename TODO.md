@@ -59,6 +59,6 @@
 
 ## 📁 기타
 
-- [x] 페이징 - ajax로 불러오기
-- [ ] Thymeleaf 템플릿 -> react로 전환 및 jwt 적용(예정)
+- [x] 페이징 - ajax
 - [x] CD 배포 후 local -> prod로 코드 변경
+- [ ] Thymeleaf 템플릿 -> react로 전환 및 jwt 적용(작업중)
