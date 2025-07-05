@@ -46,7 +46,7 @@ function Register() {
 
       setMessage({ type: "success", text: "✅ 회원가입 성공! 로그인 페이지로 이동합니다." });
       setTimeout(() => {
-        window.location.href = "/loginForm";
+        window.location.href = "/login";
       }, 1500);
 
     } catch (err) {
@@ -136,7 +136,7 @@ function Register() {
 
           <div className="mt-3 text-center">
             이미 계정이 있으신가요?{" "}
-            <a href="/loginForm">로그인하기</a>
+            <a href="/login">로그인하기</a>
           </div>
         </div>
       </section>
