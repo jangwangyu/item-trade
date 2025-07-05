@@ -15,7 +15,7 @@ spring:
     resources:
       add-mappings: true
   datasource:
-    url: jdbc:mysql://localhost:3309/item_trade
+    url: jdbc:mysql://localhost:3310/react_db
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -60,3 +60,5 @@ spring:
 file:
   upload-dir: ${UPLOAD_DIR:C:/item-trade-uploads/post}
   chat-dir: ${CHAT_DIR:C:/item-trade-uploads/chat}
+jwt:
+  secret: thisissecretkeythisissecretkeythisissecretkey
