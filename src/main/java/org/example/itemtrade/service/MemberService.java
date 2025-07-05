@@ -3,12 +3,14 @@ package org.example.itemtrade.service;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.Util.JwtTokenProvider;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.domain.MemberBlock;
 import org.example.itemtrade.dto.MemberProfileDto;
 import org.example.itemtrade.dto.User.UserType;
 import org.example.itemtrade.dto.request.MemberJoinRequest;
 import org.example.itemtrade.dto.request.MemberUpdateRequest;
+import org.example.itemtrade.dto.response.JwtResponse;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
@@ -25,26 +27,42 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final MemberBlockRepository memberBlockRepository;
   private final ItemPostRepository itemPostRepository;
+  private final JwtTokenProvider jwtTokenProvider;
+  // 로그인
+  public JwtResponse login(String email, String password) {
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+    if (!passwordEncoder.matches(password, member.getPassword())) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
+    String token = jwtTokenProvider.createToken(member.getEmail(), member.getId());
+    return new JwtResponse(token);
+  }
 
   // 회원 가입
   public void join(MemberJoinRequest request) {
+    String email = request.getEmail().trim();
+    String password = request.getPassword().trim();
+    String confirmPassword = request.getConfirmPassword().trim();
+    String nickname = request.getNickname().trim();
 
-    if (memberRepository.existsByEmail(request.getEmail())) {
+    if (memberRepository.existsByEmail(email)) {
       throw new IllegalArgumentException("이미 가입된 이메일입니다.");
     }
-    if (!request.getPassword().equals(request.getConfirmPassword())) {
+    if (!password.equals(confirmPassword)) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
-    if (memberRepository.existsByNickName(request.getNickname())) {
+    if (memberRepository.existsByNickName(nickname)) {
       throw new IllegalArgumentException("이미 가입된 닉네임입니다.");
     }
-    if (request.getNickname().length() < 2 || request.getNickname().length() > 10) {
+    if (nickname.length() < 2 || nickname.length() > 10) {
       throw new IllegalArgumentException("닉네임은 2자 이상 10자 이하로 입력해주세요.");
     }
-    if (request.getPassword().length() < 8 || request.getPassword().length() > 20) {
+    if (password.length() < 8 || password.length() > 20) {
       throw new IllegalArgumentException("비밀번호는 8자 이상 20자 이하로 입력해주세요.");
     }
-    String encodedPassword = passwordEncoder.encode(request.getPassword());
+    String encodedPassword = passwordEncoder.encode(password);
     Member memberJoin = request.toEntity(encodedPassword);
 
     String seed = UUID.randomUUID().toString();
