@@ -1,14 +1,25 @@
 package org.example.itemtrade.contoller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.dto.request.LoginRequest;
+import org.example.itemtrade.dto.response.JwtResponse;
+import org.example.itemtrade.service.MemberService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/auth")
 public class LoginController {
+  private final MemberService memberService;
 
-  @GetMapping("/loginForm")
-  public String loginForm() {
-    return "loginForm";
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    JwtResponse response = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
+    return ResponseEntity.ok(response);
   }
 
 }
