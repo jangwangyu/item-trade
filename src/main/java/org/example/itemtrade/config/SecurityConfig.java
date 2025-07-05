@@ -1,40 +1,45 @@
 package org.example.itemtrade.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.itemtrade.Util.JwtAuthenticationFilter;
+import org.example.itemtrade.Util.JwtTokenProvider;
 import org.example.itemtrade.service.CustomOAuth2UserService;
 import org.example.itemtrade.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
   private final CustomOAuth2UserService customOAuth2UserService;
   private final CustomUserDetailsService customUserDetailsService;
+  private final JwtTokenProvider jwtTokenProvider;
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT를 사용하므로 세션을 사용하지 않음
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/","loginForm", "/oauth2/**", "/ws/**","/images/**","/chat.js", "/register/**","/api/register").permitAll()
+            .requestMatchers("/","login", "/oauth2/**", "/ws/**","/images/**","/chat.js", "/register/**","/api/register", "api/auth/**").permitAll()
             .anyRequest().authenticated()
         )
+        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService),
+            UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint((request, response, authException) -> {
-                response.sendRedirect("/loginForm?needAuth=true");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Unauthorized\"}");
             }))
-        .formLogin(form -> form
-            .loginPage("/loginForm")
-            .loginProcessingUrl("/login") // 로그인 처리 URL
-            .defaultSuccessUrl("/", true) // 로그인 성공 후 이동할 URL
-            .failureUrl("/loginForm?error") // 로그인 실패 시 이동할 URL
-            .permitAll()
-        )
         .userDetailsService(customUserDetailsService)
         .oauth2Login(oauth -> oauth
             .defaultSuccessUrl("/", true)
@@ -44,7 +49,7 @@ public class SecurityConfig {
         )
         .logout(logout -> logout
             .logoutUrl("/logout") // 로그아웃 URL
-            .logoutSuccessUrl("/loginForm?logout") // ✅ 로그아웃 후 이동할 URL
+            .logoutSuccessUrl("/login?logout")
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID")
         );
