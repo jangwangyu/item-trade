@@ -1,11 +1,13 @@
 // src/pages/Login.js
 import React, { useState, useEffect } from "react";
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";   // 꼭 import!
 
 function Login() {
-  // 에러/로그아웃 메시지 쿼리파라미터에서 읽기
   const [error, setError] = useState(false);
   const [logout, setLogout] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth();      // <-- 핵심! Context의 login 함수 사용
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -16,7 +18,6 @@ function Login() {
     }
   }, []);
 
-  // 폼 입력값 관리
   const [form, setForm] = useState({ username: "", password: "" });
 
   const handleChange = e => {
@@ -24,11 +25,45 @@ function Login() {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 로그인 submit (실제는 fetch/axios로 서버에 POST)
-  const handleSubmit = e => {
+  // 실제 로그인 연동
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 서버와 통신하여 로그인 처리
-    alert("로그인 기능은 서버와 연동해야 합니다.");
+    setError(false);
+    try {
+      // 1. 로그인 요청
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        setError(true);
+        return;
+      }
+
+      const data = await res.json();
+      const token = data.token;
+
+      // 2. 토큰을 헤더에 실어서 내 정보 조회
+      const meRes = await fetch("/api/user/me", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (!meRes.ok) {
+        setError(true);
+        return;
+      }
+      const me = await meRes.json();
+      // me = { nickname: "홍길동", ... }
+
+      // 3. Context/Storage에 토큰, 닉네임 저장
+      login(me.nickName, token);
+
+      navigate("/");
+
+    } catch (err) {
+      setError(true);
+    }
   };
 
   return (
@@ -43,24 +78,21 @@ function Login() {
         <div className="card p-4 shadow login-card" style={{ width: "100%", maxWidth: 400 }}>
           <h3 className="text-center mb-4">로그인</h3>
 
-          {/* 로그인 실패 메시지 */}
           {error && (
               <div className="alert alert-danger">
                 아이디 또는 비밀번호가 올바르지 않습니다.
               </div>
           )}
 
-          {/* 로그아웃 성공 메시지 */}
           {logout && (
               <div className="alert alert-success">
                 로그아웃 되었습니다.
               </div>
           )}
 
-          {/* 로그인 폼 */}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="username" className="form-label">이메일 또는 아이디</label>
+              <label htmlFor="username" className="form-label">이메일</label>
               <input type="text" className="form-control" id="username" name="username"
                      value={form.username} onChange={handleChange} required />
             </div>
@@ -72,14 +104,12 @@ function Login() {
             <button type="submit" className="btn btn-primary w-100">로그인</button>
           </form>
 
-          {/* 소셜 로그인 버튼 */}
           <hr />
           <div className="d-grid gap-2">
             <a href="/oauth2/authorization/google" className="btn btn-outline-dark">Google 로그인</a>
             <a href="/oauth2/authorization/kakao" className="btn btn-warning text-dark">Kakao 로그인</a>
           </div>
 
-          {/* 회원가입 이동 버튼 */}
           <div className="mt-3 text-center">
             <span>계정이 없으신가요?</span>
             <Link to="/Register" className="btn btn-outline-danger w-100 mt-2">회원가입</Link>

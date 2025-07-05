@@ -5,23 +5,24 @@ import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.dto.request.MemberJoinRequest;
 import org.example.itemtrade.service.MemberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class JoinController {
   private final MemberService memberService;
-  // 회원가입 페이지로 이동
-  @GetMapping("/register")
-  public String register(Model model) {
-    model.addAttribute("registerRequest", new MemberJoinRequest());
-    return "register";
-  }
+
+//  // 회원가입 페이지로 이동
+//  @GetMapping("/api/register")
+//  public String register(Model model) {
+//    model.addAttribute("registerRequest", new MemberJoinRequest());
+//    return "register";
+//  }
 
   @ResponseBody
   @PostMapping("/api/register")
