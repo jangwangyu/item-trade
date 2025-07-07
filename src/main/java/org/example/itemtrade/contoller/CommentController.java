@@ -28,7 +28,7 @@ public class CommentController {
   private final CommentService commentService;
 
   @GetMapping("/{postId}")
-  public ResponseEntity<Page<CommentDto>> getComments(@PathVariable Long postId, @PageableDefault(size = 5, sort = "createdAt", direction = DESC) Pageable pageable) {
+  public ResponseEntity<Page<CommentDto>> getComments(@PathVariable(value = "postId") Long postId, @PageableDefault(size = 5, sort = "createdAt", direction = DESC) Pageable pageable) {
 
     Page<CommentDto> comments = commentService.commentList(postId, pageable);
     return ResponseEntity.ok(comments);
@@ -37,7 +37,7 @@ public class CommentController {
   // 댓글 작성
   @PostMapping("/{postId}")
   public ResponseEntity<CommentDto> addComment(
-      @PathVariable Long postId,
+      @PathVariable(value = "postId") Long postId,
       @AuthenticationPrincipal(expression = "member") Member member,
       @RequestBody CommentCreateRequest request) {
 
@@ -47,7 +47,7 @@ public class CommentController {
 
   // 댓글 삭제
   @DeleteMapping("/{commentId}")
-  public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public ResponseEntity<Void> deleteComment(@PathVariable(value = "commentId") Long commentId, @AuthenticationPrincipal(expression = "member") Member member) {
 
     commentService.deleteComment(commentId, member);
     return ResponseEntity.noContent().build();

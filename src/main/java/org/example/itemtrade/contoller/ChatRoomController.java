@@ -48,7 +48,7 @@ public class ChatRoomController {
 
   // 채팅방 조회
   @GetMapping("/chat/{chatRoomId}")
-  public String getChatRoom(Model model, @PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String getChatRoom(Model model, @PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 상세조회
     ChatRoomDto room = chatroomService.getChatRoomById(chatRoomId, member);
     List<ChatMessageDto> messages = chatMessageService.getMessageByRoom(chatRoomId, member);
@@ -66,7 +66,7 @@ public class ChatRoomController {
 
   // 채팅방 삭제
   @PostMapping("/chat/{postId}/delete")
-  public String deleteChatRoom(@PathVariable Long postId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String deleteChatRoom(@PathVariable(value = "postId") Long postId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 채팅방 삭제
     chatroomService.deleteChatRoom(postId, member);
 
@@ -75,7 +75,7 @@ public class ChatRoomController {
 
   // 회원 차단
   @PostMapping("/block/{targetId}")
-  public String blockMember(@PathVariable Long targetId, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam(required = false) Long chatRoomId) {
+  public String blockMember(@PathVariable(value = "targetId") Long targetId, @AuthenticationPrincipal(expression = "member") Member member, @RequestParam(required = false) Long chatRoomId) {
 
     Member blocker = member.getMember();
     Member blocked = memberService.getMemberId(targetId);
@@ -86,7 +86,7 @@ public class ChatRoomController {
 
   // 거래 완료
   @PostMapping("/chat/{chatRoomId}/complete")
-  public String completeTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String completeTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 거래 완료 처리
     chatroomService.completeTrade(chatRoomId, member);
 
@@ -95,7 +95,7 @@ public class ChatRoomController {
 
   // 거래 취소
   @PostMapping("/chat/{chatRoomId}/cancel")
-  public String cancelTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String cancelTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 거래 취소 처리
     chatroomService.cancelTrade(chatRoomId, member);
 
@@ -104,7 +104,7 @@ public class ChatRoomController {
 
   // 재거래
   @PostMapping("/chat/{chatRoomId}/reopen")
-  public String reopenTrade(@PathVariable Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String reopenTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
     // 재거래 처리
     chatroomService.reopenTrade(chatRoomId, member);
 

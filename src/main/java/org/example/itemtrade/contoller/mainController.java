@@ -33,7 +33,10 @@ public class mainController {
   private final LikesService likesService;
 
   @GetMapping("/")
-  public String index(@AuthenticationPrincipal CustomOAuth2User user , Model model, @RequestParam(required = false) Integer maxPrice, @RequestParam(required = false) Integer minPrice, @RequestParam(required = false) String category,@PageableDefault(size = 5) Pageable pageable) {
+  public String index(@AuthenticationPrincipal CustomOAuth2User user , Model model,
+      @RequestParam(value = "maxPrice", required = false) Integer maxPrice,
+      @RequestParam(value = "minPrice",required = false) Integer minPrice,
+      @RequestParam(value = "category",required = false) String category,@PageableDefault(size = 5) Pageable pageable) {
 
     Member currentUser = (user != null) ? user.getMember() : null;
 

@@ -37,7 +37,7 @@ public class PostController {
 
   // 게시글 조회
   @GetMapping("/{id}")
-  public String showDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal(expression = "member") Member member, Pageable pageable) {
+  public String showDetail(@PathVariable(value = "id") Long id, Model model, @AuthenticationPrincipal(expression = "member") Member member, Pageable pageable) {
 
     var post = postService.getPostById(id);
 
@@ -76,7 +76,7 @@ public class PostController {
 
   // 수정 view
   @GetMapping("/edit/{id}")
-  public String showEditForm(@PathVariable Long id, Model model) {
+  public String showEditForm(@PathVariable(value = "id") Long id, Model model) {
     ItemPostResponse post = postService.getPostForEdit(id);
     model.addAttribute("post", post);
     model.addAttribute("categories", Category.values());
@@ -85,7 +85,7 @@ public class PostController {
 
   // 게시글 수정
   @PutMapping("/edit/{id}")
-  public String updatePost(@PathVariable Long id,
+  public String updatePost(@PathVariable(value = "id") Long id,
       @ModelAttribute ItemPostUpdateRequest request,
       @AuthenticationPrincipal(expression = "member") Member member,
       @RequestParam(value = "images", required = false) List<MultipartFile> images,
@@ -98,7 +98,7 @@ public class PostController {
 
   // 게시글 삭제
   @DeleteMapping("/{id}/delete")
-  public String deletePost(@PathVariable Long id, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String deletePost(@PathVariable(value = "id") Long id, @AuthenticationPrincipal(expression = "member") Member member) {
 
     postService.deletePost(id, member.getMember());
 

@@ -42,6 +42,8 @@ public class PostService {
   @Value("${file.upload-dir}")
   private String uploadDir;
 
+
+
   // 전체조회
   public Page<ItemPostResponse> getAllPosts(String categoryName, Integer minPrice, Integer maxPrice, Member currentUser,
       Pageable pageable) {

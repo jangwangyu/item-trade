@@ -15,7 +15,7 @@ public class MemberController {
   private final MemberService memberService;
 
   @GetMapping("/opponent/{memberId}")
-  public String getMemberProfile(@PathVariable Long memberId, Model model) {
+  public String getMemberProfile(@PathVariable(value = "memberId") Long memberId, Model model) {
 
     // 회원 프로필 조회 로직
     MemberProfileDto profile = memberService.getMemberProfile(memberId);

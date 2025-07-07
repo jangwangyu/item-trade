@@ -25,7 +25,7 @@ public class ChatMessageController {
 
   // 전송
   @MessageMapping("/chat/{roomId}/send")
-  public void sendMessage(@DestinationVariable Long roomId, @Payload ChatMessageRequest request) {
+  public void sendMessage(@DestinationVariable(value = "roomId") Long roomId, @Payload ChatMessageRequest request) {
     ChatMessageDto message = chatMessageService.sendMessage(roomId, request);
 
     simpMessagingTemplate.convertAndSend("/topic/chat/" + roomId, message);
@@ -34,14 +34,14 @@ public class ChatMessageController {
   // // 채팅방에 속한 메세지 조회, 시간순 정렬
   @GetMapping("/chat/{roomId}/messages")
   @ResponseBody
-  public List<ChatMessageDto> getMessageByRoom(@PathVariable Long roomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public List<ChatMessageDto> getMessageByRoom(@PathVariable(value = "roomId") Long roomId, @AuthenticationPrincipal(expression = "member") Member member) {
     return chatMessageService.getMessageByRoom(roomId, member);
   }
 
   // 읽지 않은 메세지 조회
   @GetMapping("/chat/{roomId}/unread")
   @ResponseBody
-  public Long unreadMessageCount(@PathVariable Long roomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public Long unreadMessageCount(@PathVariable(value = "roomId") Long roomId, @AuthenticationPrincipal(expression = "member") Member member) {
     return chatMessageService.UnreadMessageCount(roomId, member);
   }
 }

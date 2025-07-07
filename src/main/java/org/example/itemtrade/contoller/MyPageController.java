@@ -54,7 +54,7 @@ public class MyPageController {
 
   // 차단해제
   @PostMapping("/unblock/{blockedId}")
-  public String unblockMember(@AuthenticationPrincipal UserType user, @PathVariable Long blockedId) {
+  public String unblockMember(@AuthenticationPrincipal UserType user, @PathVariable(value = "blockedId") Long blockedId) {
     Member member = user.getMember();
     Member blockedMember = memberService.getMemberId(blockedId);
     memberService.unBlockMember(member, blockedMember);
