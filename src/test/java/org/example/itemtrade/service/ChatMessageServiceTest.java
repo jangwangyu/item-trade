@@ -43,6 +43,8 @@ class ChatMessageServiceTest {
   private Principal principal;
   @InjectMocks
   private ChatMessageService chatMessageService;
+  @Mock
+  private ChatroomService chatroomService;
 
   @Test
   void 메세지_전송_정상() {
@@ -53,7 +55,7 @@ class ChatMessageServiceTest {
 
     ChatRoom chatRoom = mock(ChatRoom.class);
     given(memberRepository.findById(1L)).willReturn(Optional.of(sender));
-    given(chatRoomRepository.findById(roomId)).willReturn(Optional.of(chatRoom));
+    given(chatroomService.getChatRoomById(roomId)).willReturn(chatRoom);
 
     ChatMessage message = ChatMessage.of(sender, chatRoom, "test", "TEXT");
     given(chatMessageRepository.save(any(ChatMessage.class))).willReturn(message);
@@ -70,7 +72,7 @@ class ChatMessageServiceTest {
       assertThat(result.senderId()).isEqualTo(1L);
       assertThat(result.type()).isEqualTo("TEXT");
       verify(memberRepository).findById(sender.getId());
-      verify(chatRoomRepository).findById(roomId);
+      verify(chatroomService).getChatRoomById(roomId);
       verify(chatMessageRepository).save(any(ChatMessage.class));
   }
   @Test
@@ -121,7 +123,7 @@ class ChatMessageServiceTest {
     ChatMessage message = new ChatMessage(sender2, chatRoom, "test", "TEXT");
     message.setRead(false);
 
-    given(chatRoomRepository.findById(1L)).willReturn(Optional.of(chatRoom));
+    given(chatroomService.getChatRoomById(1L)).willReturn(chatRoom);
     given(chatMessageRepository.findAllByChatRoomOrderByCreatedAtAsc(chatRoom)).willReturn(List.of(message));
     // When
     List<ChatMessageDto> result = chatMessageService.getMessageByRoom(1L, sender1);
@@ -155,7 +157,7 @@ class ChatMessageServiceTest {
     ChatRoom chatRoom = mock(ChatRoom.class);
     Member member = new Member("test.com", "완구");
 
-    given(chatRoomRepository.findById(anyLong())).willReturn(Optional.of(chatRoom));
+    given(chatroomService.getChatRoomById(1L)).willReturn(chatRoom);
     given(chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member)).willReturn(5L);
     // When
     Long count = chatMessageService.UnreadMessageCount(1L, member);
