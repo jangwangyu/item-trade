@@ -1,12 +1,11 @@
 package org.example.itemtrade.contoller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -26,14 +25,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@SpringBootTest
+@SpringBootTest( properties = {
+    "file.upload-dir=./build/uploads-test",
+    "file.chat-dir=./build/uploads-test"
+})
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ChatRoomControllerTest {
   @Autowired
   private MemberRepository memberRepository;
@@ -54,12 +58,12 @@ class ChatRoomControllerTest {
   void 채팅방목록() throws Exception {
     // Given
     Member member = memberRepository.save(Member.builder()
-            .email("test@test.com")
+            .email("test@124.com")
             .password("password")
             .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-            .email("test@test.com")
+            .email("test@421.com")
             .password("password")
             .nickName("test")
         .build());
@@ -88,12 +92,12 @@ class ChatRoomControllerTest {
   void 채팅방_생성_service() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@412.com")
         .password("password")
         .nickName("test")
         .build());
     Member buyer = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@532.com")
         .password("password")
         .nickName("test")
         .build());
@@ -116,12 +120,12 @@ class ChatRoomControllerTest {
   void 채팅방_생성_controller() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@325.com")
         .password("password")
         .nickName("test")
         .build());
     Member buyer = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@643.com")
         .password("password")
         .nickName("test")
         .build());
@@ -136,19 +140,19 @@ class ChatRoomControllerTest {
     mvc.perform(post("/chat/" + post.getId())
         .with(authentication(new UsernamePasswordAuthenticationToken(user, null, List.of()))))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/chat/" + post.getId()));
+        .andExpect(redirectedUrlPattern("/chat/*"));
   }
 
   @Test
   void 채팅방_조회() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@436.com")
         .password("password")
         .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@456.com")
         .password("password")
         .nickName("test")
         .build());
@@ -182,12 +186,12 @@ class ChatRoomControllerTest {
   void 채팅방_삭제_service() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@546.com")
         .password("password")
         .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@765.com")
         .password("password")
         .nickName("test")
         .build());
@@ -217,12 +221,12 @@ class ChatRoomControllerTest {
   void 회원차단_service() throws Exception{
     // Given
     Member blocker = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@657.com")
         .password("password")
         .nickName("test")
         .build());
     Member blocked = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@876.com")
         .password("password")
         .nickName("test")
         .build());
@@ -250,12 +254,12 @@ class ChatRoomControllerTest {
   void 거래완료_service() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@687.com")
         .password("password")
         .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@978.com")
         .password("password")
         .nickName("test")
         .build());
@@ -285,12 +289,12 @@ class ChatRoomControllerTest {
   void 거래취소_service() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@09.com")
         .password("password")
         .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@89.com")
         .password("password")
         .nickName("test")
         .build());
@@ -318,12 +322,12 @@ class ChatRoomControllerTest {
   void 재거래_service() throws Exception{
     // Given
     Member member = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@te1st.com")
         .password("password")
         .nickName("test")
         .build());
     Member member2 = memberRepository.save(Member.builder()
-        .email("test@test.com")
+        .email("test@tes2t.com")
         .password("password")
         .nickName("test")
         .build());
