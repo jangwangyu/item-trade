@@ -24,6 +24,7 @@ import org.example.itemtrade.dto.response.ItemPostResponse;
 import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 @ActiveProfiles("test")
 @DisplayName("비즈니스 로직 - 게시물")
@@ -51,6 +53,12 @@ class PostServiceTest {
 
   @InjectMocks
   private PostService postService;
+
+  @BeforeEach
+  void setUp() {
+    // 실제 물리 디렉토리가 필요하면 temp 경로 사용
+    ReflectionTestUtils.setField(postService, "uploadDir", "test-uploads");
+  }
 
   @Test
   void 모든_게시물_확인() {

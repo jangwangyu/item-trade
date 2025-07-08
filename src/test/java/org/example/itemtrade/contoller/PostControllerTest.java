@@ -29,7 +29,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest( properties = {
+    "file.upload-dir=./build/uploads-test",
+    "file.chat-dir=./build/uploads-test"
+})
 @AutoConfigureMockMvc
 @Transactional
 class PostControllerTest {
@@ -43,12 +46,14 @@ class PostControllerTest {
   @Autowired
   private MockMvc mock;
 
+
+
   @Test
   void 게시글_조회() throws Exception {
     // Given
     Member member = memberRepository.save(
         Member.builder()
-            .email("test@test.com")
+            .email("test@123.com")
             .nickName("테스트")
             .build()
     );
@@ -82,7 +87,7 @@ class PostControllerTest {
     // Given
     Member member = memberRepository.save(
         Member.builder()
-            .email("test@test.com")
+            .email("test@321.com")
             .nickName("테스트")
             .build()
     );
@@ -110,7 +115,7 @@ class PostControllerTest {
     // Given
     Member member = memberRepository.save(
         Member.builder()
-            .email("test@test.com")
+            .email("test@231.com")
             .nickName("테스트")
             .build()
     );
@@ -162,7 +167,7 @@ class PostControllerTest {
     // Given
     Member member = memberRepository.save(
         Member.builder()
-            .email("test@test.com")
+            .email("test@213.com")
             .nickName("테스트")
             .build()
     );

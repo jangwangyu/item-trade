@@ -5,7 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(properties = {
+    "file.upload-dir=./build/uploads-test",
+    "file.chat-dir=./build/uploads-test"
+})
 class ItemTradeApplicationTests {
 
   @Test

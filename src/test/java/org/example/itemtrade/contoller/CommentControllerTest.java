@@ -21,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@SpringBootTest
+@SpringBootTest( properties = {
+    "file.upload-dir=./build/uploads-test",
+    "file.chat-dir=./build/uploads-test"
+})
 @Transactional
 class CommentControllerTest {
 
@@ -33,6 +36,8 @@ class CommentControllerTest {
    private MemberRepository memberRepository;
    @Autowired
    private CommentService commentService;
+
+
    @Test
    void 댓글작성() {
      // Given

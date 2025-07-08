@@ -18,7 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(
+    properties = {
+        "file.upload-dir=./build/uploads-test",
+        "file.chat-dir=./build/uploads-test"
+    })
 @AutoConfigureMockMvc
 @Transactional
 class JoinControllerTest {

@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.List;
-import org.example.itemtrade.domain.ChatMessage;
 import org.example.itemtrade.domain.ChatRoom;
 import org.example.itemtrade.domain.Comment;
 import org.example.itemtrade.domain.ItemImage;
@@ -23,6 +22,7 @@ import org.example.itemtrade.repository.ChatRoomRepository;
 import org.example.itemtrade.repository.CommentRepository;
 import org.example.itemtrade.repository.ItemImageRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
+import org.example.itemtrade.repository.LikeRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
 import org.example.itemtrade.repository.MemberRepository;
 import org.example.itemtrade.service.MyPageService;
@@ -36,7 +36,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest( properties = {
+    "file.upload-dir=./build/uploads-test",
+    "file.chat-dir=./build/uploads-test"
+})
 @AutoConfigureMockMvc
 @Transactional
 class MyPageControllerTest {
@@ -54,6 +57,8 @@ class MyPageControllerTest {
   private ItemImageRepository itemImageRepository;
   @Autowired
   private ChatRoomRepository chatRoomRepository;
+  @Autowired
+  private LikeRepository likeRepository;
   @Autowired
   private ChatMessageRepository chatMessageRepository;
   @Autowired
@@ -76,7 +81,7 @@ class MyPageControllerTest {
         .blocker(member)
         .blocked(blocked)
         .build();
-    itemPostRepository.save(ItemPost.builder()
+    ItemPost post = itemPostRepository.save(ItemPost.builder()
         .title("test")
         .description("test")
         .price(1000)
@@ -91,7 +96,7 @@ class MyPageControllerTest {
         .andExpect(model().attributeExists("loginType"))
         .andExpect(model().attributeExists("member"))
         .andExpect(model().attributeExists("blockedMembers"))
-        .andExpect(view().name("/mypage"))
+        .andExpect(view().name("mypage"))
         .andExpect(status().isOk());
   }
 
