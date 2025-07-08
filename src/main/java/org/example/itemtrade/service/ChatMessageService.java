@@ -30,8 +30,6 @@ public class ChatMessageService {
 
     Member sender = memberRepository.findById(senderId).orElseThrow(() ->
         new IllegalArgumentException("사용자가 존재하지 않습니다."));
-
-
     return sendMessages(roomId, sender, request.getContent(), request.getType());
   }
 
@@ -39,6 +37,9 @@ public class ChatMessageService {
   public ChatMessageDto sendMessages(Long roomId, Member sender, String content, String type) {
     // 채팅방 존재하는지 확인
     ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
+    if (chatRoom == null) {
+      throw new IllegalArgumentException("채팅방이 존재하지 않습니다.");
+    }
 
     chatRoom.restoreFor(sender);
 
@@ -56,7 +57,9 @@ public class ChatMessageService {
   public List<ChatMessageDto> getMessageByRoom(Long roomId, Member sender) {
     // 채팅방 존재하는지 확인
     ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
-
+    if (chatRoom == null) {
+      throw new IllegalArgumentException("채팅방이 존재하지 않습니다.");
+    }
     List<ChatMessage> messages = chatMessageRepository.findAllByChatRoomOrderByCreatedAtAsc(chatRoom);
 
     // 아직 안읽은 메세지 중 내가 보낸게 아닌 메세지만 읽음 처리
@@ -73,7 +76,9 @@ public class ChatMessageService {
   // 읽지 않은 메세지 조회
   public Long UnreadMessageCount(Long roomId, Member member) {
     ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
-
+    if (chatRoom == null) {
+      throw new IllegalArgumentException("채팅방이 존재하지 않습니다.");
+    }
     return chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member);
   }
 
