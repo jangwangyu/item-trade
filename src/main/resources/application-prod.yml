@@ -36,7 +36,7 @@ spring:
               - account_email
               - birthday
               - birthyear
-            redirect-uri: "http://13.211.3.217:8080/login/oauth2/code/kakao"
+            redirect-uri: "https://item-trade.co.kr/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
           google:
