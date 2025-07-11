@@ -15,7 +15,7 @@
 ## 기술 스택
 
 | 분류         | 기술 구성                                   |
-| ---------- | --------------------------------------- |
+| ---------- |-----------------------------------------|
 | Language   | Java 17                                 |
 | Backend    | Spring Boot 3.4.4, Spring Security, JPA |
 | Frontend   | Thymeleaf, Bootstrap 5                  |
@@ -129,7 +129,6 @@ OAuth2 로그인 흐름: 사용자 → 소셜 인증 → Spring Security → Cus
 ## 개선 점
 
 * OAuth2 인증 처리 시 provider + providerId 기준 사용자 식별 방식 설계
-* WebSocket 인증 문제 해결: 인증 정보 세션 유지 처리
 * 채팅 Soft Delete: 구매자/판매자별 각각 삭제 상태 관리
 * 게시글 이미지 다중 업로드 → MultipartFile 유효성 검사 및 파일 시스템 저장 구현
 * Ajax를 이용한 댓글/채팅 페이징 처리
