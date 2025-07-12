@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class ChatroomService {
+public class ChatRoomService {
 
   private final ChatRoomRepository chatroomRepository;
   private final ItemPostRepository itemPostRepository;
@@ -165,5 +165,11 @@ public class ChatroomService {
     chatRoom.setTradeSellerComplete(false);
     chatRoom.setTradeBuyerComplete(false);
 
+  }
+
+  public Long getUnreadRoomCount(Member member) {
+    List<ChatRoomDto> chatRooms = getChatRoomsForMember(member);
+    return chatRooms.stream()
+        .mapToLong(ChatRoomDto::unreadCount).sum();
   }
 }
