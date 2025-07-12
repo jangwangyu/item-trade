@@ -44,7 +44,7 @@ class ChatMessageServiceTest {
   @InjectMocks
   private ChatMessageService chatMessageService;
   @Mock
-  private ChatroomService chatroomService;
+  private ChatRoomService chatroomService;
 
   @Test
   void 메세지_전송_정상() {

@@ -7,7 +7,7 @@ import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.ChatMessageDto;
 import org.example.itemtrade.dto.ChatRoomDto;
 import org.example.itemtrade.service.ChatMessageService;
-import org.example.itemtrade.service.ChatroomService;
+import org.example.itemtrade.service.ChatRoomService;
 import org.example.itemtrade.service.MemberService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ChatRoomController {
 
-  private final ChatroomService chatroomService;
+  private final ChatRoomService chatroomService;
   private final ChatMessageService chatMessageService;
   private final MemberService memberService;
 

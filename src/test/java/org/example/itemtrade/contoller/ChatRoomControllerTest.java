@@ -18,7 +18,7 @@ import org.example.itemtrade.repository.ChatRoomRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
 import org.example.itemtrade.repository.MemberRepository;
-import org.example.itemtrade.service.ChatroomService;
+import org.example.itemtrade.service.ChatRoomService;
 import org.example.itemtrade.service.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ class ChatRoomControllerTest {
   @Autowired
   private MemberBlockRepository memberBlockRepository;
   @Autowired
-  private ChatroomService chatroomService;
+  private ChatRoomService chatroomService;
   @Autowired
   private MemberService memberService;
   @Autowired

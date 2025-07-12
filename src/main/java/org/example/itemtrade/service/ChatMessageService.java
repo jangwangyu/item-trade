@@ -21,7 +21,7 @@ public class ChatMessageService {
   private final ChatRoomRepository chatRoomRepository;
   private final ChatMessageRepository chatMessageRepository;
   private final MemberRepository memberRepository;
-  private final ChatroomService chatroomService;
+  private final ChatRoomService chatroomService;
 
   // 메세지 전송
   public ChatMessageDto sendMessage(Long roomId, ChatMessageRequest request) {

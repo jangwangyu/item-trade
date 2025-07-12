@@ -35,7 +35,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @DisplayName("비즈니스 로직 - 채팅방")
 @ExtendWith(MockitoExtension.class)
-class ChatroomServiceTest {
+class ChatRoomServiceTest {
 
   @Mock
   private ChatRoomRepository chatRoomRepository;
@@ -50,7 +50,7 @@ class ChatroomServiceTest {
   private ChatMessageRepository chatMessageRepository;
 
   @InjectMocks
-  private ChatroomService chatroomService;
+  private ChatRoomService chatroomService;
 
   @Mock
   private MemberService memberService;

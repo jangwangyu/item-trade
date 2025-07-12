@@ -1,6 +1,5 @@
 package org.example.itemtrade.contoller;
 
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.example.itemtrade.domain.ItemPost;
