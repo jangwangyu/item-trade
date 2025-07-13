@@ -15,6 +15,7 @@ import org.example.itemtrade.domain.ItemPost;
 import org.example.itemtrade.domain.Member;
 import org.example.itemtrade.dto.User.CustomOAuth2User;
 import org.example.itemtrade.enums.Category;
+import org.example.itemtrade.repository.ItemImageRepository;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ class PostControllerTest {
 
   @Autowired
   private ItemPostRepository itemPostRepository;
+
+  @Autowired
+  private ItemImageRepository itemImageRepository;
 
   @Autowired
   private MockMvc mock;
@@ -133,7 +137,7 @@ class PostControllerTest {
     );
     // 기존 이미지
     ItemImage image = ItemImage.of("/uploads/post/existing-image.jpg");
-    image.setId(1L); // 임시 ID 설정
+    image = itemImageRepository.save(image);
     post.addImage(image);
 
     MockMultipartFile newImage = new MockMultipartFile("images", "new-image.jpg", "image/jpeg", "new image".getBytes());
