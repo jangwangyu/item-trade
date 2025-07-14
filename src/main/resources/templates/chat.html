@@ -34,6 +34,9 @@
 <body th:replace="~{layout :: layout(~{::section})}">
 <section style="background-color: #f8f9fa; padding: 2rem; border-radius: 0.5rem;">
   <!-- 채팅 헤더 -->
+  <div th:if="${tradeMsg}" class="alert alert-info" th:text="${tradeMsg}"></div>
+  <div th:if="${tradeCancel}" class="alert alert-info" th:text="${tradeCancel}"></div>
+  <div th:if="${tradeRetry}" class="alert alert-info" th:text="${tradeRetry}"></div>
   <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
     <h4 class="mb-0" th:text="${room.itemTitle()}">아이템 제목</h4>
     <span class="text-primary fw-semibold fs-5" th:text="${#numbers.formatInteger(room.itemPrice(), 3, 'COMMA') + '원'}">50,000원</span>
@@ -45,8 +48,8 @@
       <button type="submit" class="btn btn-success">거래 완료</button>
     </form>
 
-    <!-- 거래 취소 버튼 -->
-    <form th:if="${isSeller or isBuyer}"
+    <!-- 거래 취소 버튼 (거래가 취소된 경우에는 안 보임) -->
+    <form th:if="${(isSeller or isBuyer) and room.tradeStatus.name() != 'CANCEL'}"
           th:action="@{/chat/{id}/cancel(id=${room.id})}" method="post"
           onsubmit="return confirm('정말 거래를 취소하시겠습니까?');">
       <button type="submit" class="btn btn-outline-danger">거래 취소</button>

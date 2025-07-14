@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
 @Controller
@@ -86,28 +87,32 @@ public class ChatRoomController {
 
   // 거래 완료
   @PostMapping("/chat/{chatRoomId}/complete")
-  public String completeTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String completeTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member,
+      RedirectAttributes redirectAttributes) {
     // 거래 완료 처리
     chatroomService.completeTrade(chatRoomId, member);
+    redirectAttributes.addFlashAttribute("tradeMsg", "상대방도 거래 완료를 누르면 거래가 완료됩니다.");
 
     return "redirect:/chat/" + chatRoomId;
   }
 
   // 거래 취소
   @PostMapping("/chat/{chatRoomId}/cancel")
-  public String cancelTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String cancelTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member,
+      RedirectAttributes redirectAttributes) {
     // 거래 취소 처리
     chatroomService.cancelTrade(chatRoomId, member);
-
+    redirectAttributes.addFlashAttribute("tradeCancel", "거래가 취소되었습니다.");
     return "redirect:/chat/" + chatRoomId;
   }
 
   // 재거래
   @PostMapping("/chat/{chatRoomId}/reopen")
-  public String reopenTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member) {
+  public String reopenTrade(@PathVariable(value = "chatRoomId") Long chatRoomId, @AuthenticationPrincipal(expression = "member") Member member,
+      RedirectAttributes redirectAttributes) {
     // 재거래 처리
     chatroomService.reopenTrade(chatRoomId, member);
-
+    redirectAttributes.addFlashAttribute("tradeRetry", "재거래를 요청합니다. 상대방이 수락하면 거래가 재개됩니다.");
     return "redirect:/chat/" + chatRoomId;
   }
 }
