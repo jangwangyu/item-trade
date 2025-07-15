@@ -71,10 +71,52 @@
 
   <!-- 게시글 작성 버튼 -->
   <a class="btn btn-primary mt-4" th:href="@{/posts/new}">게시글 작성</a>
+  <!-- 📄 페이지 네비게이션 -->
+  <nav th:if="${posts.totalPages > 1}" aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+
+      <!-- « 이전 -->
+      <li th:classappend="${posts.first} ? 'disabled'" class="page-item">
+        <a class="page-link"
+           th:href="@{/(page=${posts.number-1},
+                     size=${posts.size},
+                     minPrice=${param.minPrice},
+                     maxPrice=${param.maxPrice},
+                     category=${param.category != null ? param.category : ''})}"
+           aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <!-- 페이지 번호 -->
+      <li th:each="pageNum : ${#numbers.sequence(0, posts.totalPages-1)}"
+          th:classappend="${pageNum == posts.number} ? 'active'"
+          class="page-item">
+        <a class="page-link"
+           th:text="${pageNum + 1}"
+           th:href="@{/(page=${pageNum},
+                     size=${posts.size},
+                     minPrice=${param.minPrice},
+                     maxPrice=${param.maxPrice},
+                     category=${param.category != null ? param.category : ''})}">
+        </a>
+      </li>
+      <!-- 다음 » -->
+      <li th:classappend="${posts.last} ? 'disabled'" class="page-item">
+        <a class="page-link"
+           th:href="@{/(page=${posts.number+1},
+                     size=${posts.size},
+                     minPrice=${param.minPrice},
+                     maxPrice=${param.maxPrice},
+                     category=${param.category != null ? param.category : ''})}"
+           aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
 </section>
-
-
-
 
 </body>
 <script>

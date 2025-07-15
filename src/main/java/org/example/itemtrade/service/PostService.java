@@ -22,6 +22,8 @@ import org.example.itemtrade.enums.Category;
 import org.example.itemtrade.enums.TradeStatus;
 import org.example.itemtrade.repository.ItemPostRepository;
 import org.example.itemtrade.repository.MemberBlockRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,7 @@ public class PostService {
 
   private final ItemPostRepository postRepository;
   private final MemberBlockRepository memberBlockRepository;
+  private final Logger log = LoggerFactory.getLogger(PostService.class);
 
   @Value("${file.upload-dir}")
   private String uploadDir;
@@ -50,7 +53,15 @@ public class PostService {
 
     List<Member> blocked = (currentUser != null) ? memberBlockRepository.findAllByBlocker(currentUser).stream().map(MemberBlock::getBlocked).toList() : Collections.emptyList();
 
-    Category category = (categoryName != null) ? Category.valueOf(categoryName) : null;
+    Category category = null;
+    if (categoryName != null && !categoryName.isBlank()) {
+      try {
+        // 대·소문자 아무거나 들어와도 처리
+        category = Category.valueOf(categoryName.toUpperCase());
+      } catch (IllegalArgumentException e) {      // 존재하지 않으면 null
+        log.warn("잘못된 카테고리 파라미터={}", categoryName);
+      }
+    }
 
     return postRepository.findAllPosts(category, minPrice, maxPrice, blocked, pageable).map(ItemPostResponse::from);
   }
