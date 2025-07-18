@@ -172,4 +172,11 @@ public class ChatRoomService {
     return chatRooms.stream()
         .mapToLong(ChatRoomDto::unreadCount).sum();
   }
+
+  // 상대방 확인
+  public Member getOpponent(Long roomId, Member me) {
+    ChatRoom chatRoom = getChatRoomById(roomId);
+
+    return chatRoom.getOpponent(me);
+  }
 }

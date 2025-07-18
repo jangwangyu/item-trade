@@ -48,7 +48,6 @@ public class ChatMessageService {
     chatRoom.setLastMessageCreatedAt(message.getCreatedAt());
     chatMessageRepository.save(message);
 
-    System.out.println("Message saved: " + message.getContent());
 
     return ChatMessageDto.from(message);
   }
@@ -82,5 +81,15 @@ public class ChatMessageService {
     return chatMessageRepository.countByChatRoomAndSenderNotAndIsReadFalse(chatRoom, member);
   }
 
+  // 거래 완료 메세지 전송
+  public void sendTradeMessage(Long roomId, Member sender) {
+    // 채팅방 존재하는지 확인
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
+    chatroomService.completeTrade(roomId, sender);
+    Member opponent = sender.equals(chatRoom.getBuyer()) ? chatRoom.getBuyer() : chatRoom.getSeller();
+    String message = sender.getNickName() + "님이 거래를 완료했습니다.";
+    chatRoom.restoreFor(sender);
 
+    sendMessages(roomId, sender, message, "TEXT");
+  }
 }

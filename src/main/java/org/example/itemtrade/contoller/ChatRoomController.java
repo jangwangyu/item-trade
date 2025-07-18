@@ -9,6 +9,7 @@ import org.example.itemtrade.dto.ChatRoomDto;
 import org.example.itemtrade.service.ChatMessageService;
 import org.example.itemtrade.service.ChatRoomService;
 import org.example.itemtrade.service.MemberService;
+import org.example.itemtrade.service.NotificationService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,8 @@ public class ChatRoomController {
   private final ChatRoomService chatroomService;
   private final ChatMessageService chatMessageService;
   private final MemberService memberService;
+  private final ChatRoomService chatRoomService;
+  private final NotificationService notificationService;
 
   // 채팅방 목록
   @GetMapping("/chat-list")
@@ -61,6 +64,8 @@ public class ChatRoomController {
     model.addAttribute("isSeller",room.sellerId().equals(member.getId()));
     model.addAttribute("isBuyer", room.buyerId().equals(member.getId()));
 
+    model.addAttribute("isChatRoom", true);
+
     return "chat";
   }
 
@@ -91,7 +96,15 @@ public class ChatRoomController {
       RedirectAttributes redirectAttributes) {
     // 거래 완료 처리
     chatroomService.completeTrade(chatRoomId, member);
+
+    Member opponent = chatRoomService.getOpponent(chatRoomId, member);
+
+    chatMessageService.sendTradeMessage(chatRoomId, member);
+
+    notificationService.sendNotification(opponent, member.getNickName() + "님이 거래 완료를 요청하셨습니다.", "/chat/" + chatRoomId);
+
     redirectAttributes.addFlashAttribute("tradeMsg", "상대방도 거래 완료를 누르면 거래가 완료됩니다.");
+
 
     return "redirect:/chat/" + chatRoomId;
   }
