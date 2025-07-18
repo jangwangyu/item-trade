@@ -104,6 +104,8 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Like> likes = new ArrayList<>();
 
+  @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Notification> notifications = new ArrayList<>();
 
   public void addBuyRoom(ChatRoom room) {
     buyRooms.add(room);
