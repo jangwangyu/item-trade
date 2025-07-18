@@ -1,13 +1,15 @@
+// === chat.js ===
+
 document.addEventListener('DOMContentLoaded', function () {
   const roomId = window.roomId;
   const senderId = window.senderId;
 
+  // 채팅 WebSocket 연결 (알림 소켓과 분리)
   const sockJsProtocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
   const wsHost = window.location.host;
   const wsPath = '/ws';
-
-  const socket = new SockJS(`${sockJsProtocol}//${wsHost}${wsPath}`);
-  const stompClient = Stomp.over(socket);
+  const chatSocket = new SockJS(`${sockJsProtocol}//${wsHost}${wsPath}`);
+  const chatStompClient = Stomp.over(chatSocket);
 
   let initialized = false;
   const messageQueue = [];
@@ -22,12 +24,10 @@ document.addEventListener('DOMContentLoaded', function () {
     messageQueue.length = 0;
   });
 
-  // 2. WebSocket 연결 및 수신 구독
-  stompClient.connect({}, function () {
-    console.log('✅ 연결됨');
-    stompClient.subscribe('/topic/chat/' + roomId, function (message) {
+  // 2. 채팅 메시지 수신 구독
+  chatStompClient.connect({}, function () {
+    chatStompClient.subscribe('/topic/chat/' + roomId, function (message) {
       const msg = JSON.parse(message.body);
-      console.log('✅ 메시지 수신:', msg);
       if (!initialized) {
         messageQueue.push(msg);
       } else {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const message = input.value.trim();
 
     if (message !== '') {
-      stompClient.send("/app/chat/" + roomId + "/send", {}, JSON.stringify({
+      chatStompClient.send("/app/chat/" + roomId + "/send", {}, JSON.stringify({
         content: message,
         senderId: senderId,
         type: "text"
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const imageUrl = await response.text();
 
-      stompClient.send("/app/chat/" + roomId + "/send", {}, JSON.stringify({
+      chatStompClient.send("/app/chat/" + roomId + "/send", {}, JSON.stringify({
         content: imageUrl,
         senderId: senderId,
         type: "image"
@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+// appendMessage 함수는 기존 그대로
 function appendMessage(msg) {
   const isMine = Number(msg.senderId) === Number(window.senderId);
   const isImage = msg.type === 'image';
