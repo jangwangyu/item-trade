@@ -29,7 +29,7 @@ public class CustomOAuth2User implements OAuth2User, UserType { // Member 객체
 
   @Override
   public String getName() {
-    return this.member.getNickName();
+    return this.member.getEmail();
   }
 
   @Override
