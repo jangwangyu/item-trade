@@ -85,9 +85,30 @@ public class ChatMessageService {
   public void sendTradeMessage(Long roomId, Member sender) {
     // 채팅방 존재하는지 확인
     ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
-    chatroomService.completeTrade(roomId, sender);
     Member opponent = sender.equals(chatRoom.getBuyer()) ? chatRoom.getBuyer() : chatRoom.getSeller();
     String message = sender.getNickName() + "님이 거래를 완료했습니다.";
+    chatRoom.restoreFor(sender);
+
+    sendMessages(roomId, sender, message, "TEXT");
+  }
+
+  // 거래 취소 메세지 전송
+  public void sendCancelTradeMessage(Long roomId, Member sender) {
+    // 채팅방 존재하는지 확인
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
+    Member opponent = sender.equals(chatRoom.getBuyer()) ? chatRoom.getBuyer() : chatRoom.getSeller();
+    String message = sender.getNickName() + "님이 거래를 취소했습니다.";
+    chatRoom.restoreFor(sender);
+
+    sendMessages(roomId, sender, message, "TEXT");
+  }
+
+  // 거래 재요청 메세지 전송
+  public void sendReTradeMessage(Long roomId, Member sender) {
+    // 채팅방 존재하는지 확인
+    ChatRoom chatRoom = chatroomService.getChatRoomById(roomId);
+    Member opponent = sender.equals(chatRoom.getBuyer()) ? chatRoom.getBuyer() : chatRoom.getSeller();
+    String message = sender.getNickName() + "님이 거래를 재요청했습니다.";
     chatRoom.restoreFor(sender);
 
     sendMessages(roomId, sender, message, "TEXT");
