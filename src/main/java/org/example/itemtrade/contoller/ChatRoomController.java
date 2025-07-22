@@ -115,9 +115,6 @@ public class ChatRoomController {
       RedirectAttributes redirectAttributes) {
     // 거래 취소 처리
     chatroomService.cancelTrade(chatRoomId, member);
-    Member opponent = chatRoomService.getOpponent(chatRoomId, member);
-    chatMessageService.sendCancelTradeMessage(chatRoomId, member);
-    notificationService.sendNotification(opponent, member.getNickName() + "님이 거래를 취소하셨습니다.", "/chat/" + chatRoomId);
     redirectAttributes.addFlashAttribute("tradeCancel", "거래가 취소되었습니다.");
     return "redirect:/chat/" + chatRoomId;
   }
@@ -128,9 +125,6 @@ public class ChatRoomController {
       RedirectAttributes redirectAttributes) {
     // 재거래 처리
     chatroomService.reopenTrade(chatRoomId, member);
-    Member opponent = chatRoomService.getOpponent(chatRoomId, member);
-    chatMessageService.sendReTradeMessage(chatRoomId, member);
-    notificationService.sendNotification(opponent, member.getNickName() + "님이 재거래를 요청하셨습니다.", "/chat/" + chatRoomId);
     redirectAttributes.addFlashAttribute("tradeRetry", "재거래를 요청합니다. 상대방이 수락하면 거래가 재개됩니다.");
     return "redirect:/chat/" + chatRoomId;
   }

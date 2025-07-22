@@ -36,10 +36,40 @@
     <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 1055;"></div>
     <ul id="notification-list" class="list-group" style="position:fixed; bottom:100px; right:24px; max-width:300px; min-width:220px;"></ul>
     <!-- 오른쪽: 인증 메뉴 -->
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item" sec:authorize="isAnonymous()">
-        <a class="nav-link" href="/loginForm">로그인</a>
+    <ul class="navbar-nav ms-auto align-items-center">
+      <!-- ✅ 로그인된 사용자에게만 알림 드롭다운 노출 -->
+      <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+        <a class="nav-link position-relative dropdown-toggle" href="#" id="notificationDropdown" role="button"
+           data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-bell"></i>
+          <span th:if="${unreadNotificationCount > 0}"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                th:text="${unreadNotificationCount}">
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="min-width:320px; max-width:400px;">
+          <li th:if="${notificationList == null or #lists.isEmpty(notificationList)}" class="dropdown-item text-center text-muted">
+            알림이 없습니다.
+          </li>
+          <li th:each="noti : ${notificationList}">
+            <a class="dropdown-item d-flex justify-content-between align-items-start"
+               th:href="@{/notifications/{id}(id=${noti.id})}">
+              <div>
+                <span th:text="${noti.content}">알림 내용</span>
+                <div class="small text-muted" th:text="${#temporals.format(noti.createdAt, 'yyyy-MM-dd HH:mm')}">시간</div>
+              </div>
+              <span th:if="${noti.unread}" class="badge bg-primary ms-2">NEW</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li>
+            <a class="dropdown-item text-center" href="/notifications">전체 알림 보기</a>
+          </li>
+        </ul>
       </li>
+      <!-- ▼ 아래는 기존 마이페이지/로그아웃 드롭다운(이것도 sec:authorize="isAuthenticated()" 유지!) -->
       <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
            data-bs-toggle="dropdown" aria-expanded="false">
@@ -50,7 +80,12 @@
           <li><a class="dropdown-item" href="/logout">로그아웃</a></li>
         </ul>
       </li>
+      <!-- ▼ 로그인 안한 사람에겐 로그인 메뉴만 노출 -->
+      <li class="nav-item" sec:authorize="isAnonymous()">
+        <a class="nav-link" href="/loginForm">로그인</a>
+      </li>
     </ul>
+
   </div>
 </nav>
 
