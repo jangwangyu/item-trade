@@ -33,8 +33,6 @@ window.notificationStompClient = notificationStompClient;
 
 notificationStompClient.connect({}, function () {
   notificationStompClient.subscribe('/user/queue/notifications', function (message) {
-    console.log("[알림 도착]", message.body);
-    alert('알림: ' + message.body);
     const notif = JSON.parse(message.body);
     showToast(notif.message);
     addNotificationToList(notif);
