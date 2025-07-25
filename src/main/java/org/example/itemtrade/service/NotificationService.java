@@ -8,6 +8,9 @@ import org.example.itemtrade.domain.Notification;
 import org.example.itemtrade.dto.NotificationDto;
 import org.example.itemtrade.repository.MemberRepository;
 import org.example.itemtrade.repository.NotificationRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +54,21 @@ public class NotificationService {
     }
     notification.setRead(true);
     notificationRepository.save(notification);
+  }
+
+  public List<NotificationDto> findRecentByTarget(Member member, int limit) {
+    Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+    List<Notification> notifications = notificationRepository.findByTargetOrderByCreatedAtDesc(member, pageable);
+
+    return notifications.stream()
+        .map(NotificationDto::from)
+        .filter(notification -> !notification.isRead())
+        .toList();
+  }
+
+  public Long countUnreadNotifications(Member member) {
+    return notificationRepository.countByTargetAndIsReadIsFalse(member);
   }
 
 }

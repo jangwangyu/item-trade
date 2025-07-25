@@ -1,5 +1,6 @@
 package org.example.itemtrade.dto;
 
+import java.time.format.DateTimeFormatter;
 import org.example.itemtrade.domain.Notification;
 
 public record NotificationDto(
@@ -17,7 +18,7 @@ public record NotificationDto(
         notification.getMessage(),
         notification.getUrl(),
         notification.isRead(),
-        notification.getCreatedAt().toString(),
+        notification.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
         notification.getTarget().getId(),
         notification.getTarget().getEmail()
     );
