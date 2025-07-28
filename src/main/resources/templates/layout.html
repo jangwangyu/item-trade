@@ -54,8 +54,11 @@
           <li th:each="noti : ${notificationList}">
             <div class="d-flex justify-content-between align-items-center">
               <!-- 알림 내용 + NEW -->
-              <a class="dropdown-item flex-grow-1 d-flex align-items-start p-0"
-                 th:href="${noti.url}" style="border:none; background:none;">
+              <a href = "#"
+                  class="dropdown-item flex-grow-1 d-flex align-items-start p-0"
+                  th:attr="data-url = ${noti.url}, data-id = ${noti.id}"
+                  style="border:none; background:none;"
+                  onclick="readNotification(this); return false;">
                 <div>
                   <span th:text="${noti.message}">알림 내용</span>
                   <div class="small text-muted" th:text="${noti.createdAt}">시간</div>
@@ -122,6 +125,16 @@
     if (!confirm('알림을 삭제할까요?')) return;
     const li = btn.closest('li');
     if (li) li.remove();
+  }
+  function readNotification(link) {
+    const url = link.getAttribute('data-url');
+    const id = link.getAttribute('data-id');
+    if (!id || !url) return;
+
+    fetch(`/api/notifications/${id}/read`, {method: 'PATCH'})
+    .finally(() => {
+        window.location.href = url;
+      });
   }
 </script>
 </body>
