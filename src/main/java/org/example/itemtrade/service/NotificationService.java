@@ -56,10 +56,9 @@ public class NotificationService {
     notificationRepository.save(notification);
   }
 
-  public List<NotificationDto> findRecentByTarget(Member member, int limit) {
-    Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+  public List<NotificationDto> findRecentByTarget(Member member) {
 
-    List<Notification> notifications = notificationRepository.findByTargetOrderByCreatedAtDesc(member, pageable);
+    List<Notification> notifications = notificationRepository.findByTargetOrderByCreatedAtDesc(member);
 
     return notifications.stream()
         .map(NotificationDto::from)

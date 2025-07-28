@@ -36,7 +36,7 @@ public class ModelAttributeAdvice {
             member = user.getMember();
         }
         if(member != null) {
-            List<NotificationDto> notificationList = notificationService.findRecentByTarget(member, 5);
+            List<NotificationDto> notificationList = notificationService.findRecentByTarget(member);
             Long unreadNotificationCount = notificationService.countUnreadNotifications(member);
 
             model.addAttribute("notificationList", notificationList);

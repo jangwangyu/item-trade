@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
   List<Notification> findAllByTarget(Member member);
 
-  List<Notification> findByTargetOrderByCreatedAtDesc(Member member, Pageable pageable);
+  List<Notification> findByTargetOrderByCreatedAtDesc(Member member);
 
   Long countByTargetAndIsReadIsFalse(Member member);
 }
