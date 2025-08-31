@@ -23,7 +23,7 @@ public class ChatMessageController {
   private final ChatMessageService chatMessageService;
   private final SimpMessagingTemplate simpMessagingTemplate;
 
-  // 전송
+  // 전 송
   @MessageMapping("/chat/{roomId}/send")
   public void sendMessage(@DestinationVariable(value = "roomId") Long roomId, @Payload ChatMessageRequest request) {
     ChatMessageDto message = chatMessageService.sendMessage(roomId, request);
