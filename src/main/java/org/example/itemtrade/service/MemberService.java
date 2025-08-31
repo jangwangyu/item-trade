@@ -26,7 +26,7 @@ public class MemberService {
   private final MemberBlockRepository memberBlockRepository;
   private final ItemPostRepository itemPostRepository;
 
-  // 회원 가입
+  // 회원 가입.
   public void join(MemberJoinRequest request) {
 
     if (memberRepository.existsByEmail(request.getEmail())) {
