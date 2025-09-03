@@ -185,7 +185,7 @@ public class PostService {
     for(ItemImage image : post.getImages()) {
       String imagePath = image.getImagePath();
       Path path = Paths.get(
-          "C:/Users/dkfdj/IdeaProjects/item-trade/src/main/resources" + imagePath);
+          uploadDir + imagePath);
       try {
         Files.deleteIfExists(path);
       } catch (IOException e) {
